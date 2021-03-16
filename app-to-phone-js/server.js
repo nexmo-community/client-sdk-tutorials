@@ -28,15 +28,14 @@ app.all('/voice/event', (req, res) => {
   res.sendStatus(200);
 });
 
-app.listen(3001);
+app.listen(3000);
 
 
 const localtunnel = require('localtunnel');
 (async () => {
   const tunnel = await localtunnel({ 
-      // subdomain: 'SUBDOMAIN', 
-      subdomain: 'paul-vonage',
-      port: 3001
+      subdomain: 'SUBDOMAIN',
+      port: 3000
     });
   console.log(`App available at: ${tunnel.url}`);
 })();
