@@ -1,0 +1,7 @@
+.nexmo-app
+private.key
+.DS_Store
+
+app-to-phone-js/node_modules/*
+app-to-phone-swift/node_modules/*
+app-to-phone-swift/AppToPhone/Pods/*
