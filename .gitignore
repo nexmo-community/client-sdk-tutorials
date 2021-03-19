@@ -5,3 +5,5 @@ private.key
 app-to-phone-js/node_modules/*
 app-to-phone-swift/node_modules/*
 app-to-phone-swift/AppToPhone/Pods/*
+app-to-phone-objc/node_modules/*
+app-to-phone-objc/AppToPhone/Pods/*
