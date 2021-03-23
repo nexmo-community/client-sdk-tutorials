@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="48dp">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+
+        <TextView
+                android:id="@+id/waitingTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:textSize="20sp"
+                android:padding="16dp"
+                android:text="Waiting for incoming call" />
+
+        <Button
+                android:id="@+id/callBobButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="36dp"
+                android:drawablePadding="8dp"
+                android:padding="16dp"
+                android:text="Start call with Bob" />
+
+        <androidx.core.widget.ContentLoadingProgressBar
+                android:id="@+id/progressBar"
+                android:layout_marginTop="36dp"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible" />
+    </LinearLayout>
+
+</FrameLayout>
