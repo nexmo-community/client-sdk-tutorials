@@ -1,22 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:gravity="center"
         tools:context=".MainActivity">
 
-    <fragment
-            android:id="@+id/navHostFragment"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:defaultNavHost="true"
+    <TextView
+            android:id="@+id/connectionStatusTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"
+            android:layout_marginBottom="20dp"
+            tools:text="Connection status" />
+
+    <Button
+            android:id="@+id/makeCallButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="8dp"
+            android:layout_marginBottom="20dp"
+            android:padding="16dp"
+            android:text="Make phone call" />
+
+    <Button
+            android:id="@+id/endCallButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="End call"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:navGraph="@navigation/app_nav_graph" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintVertical_bias="0.2"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+</LinearLayout>

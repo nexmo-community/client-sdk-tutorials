@@ -1,34 +1,116 @@
 package com.vonage.tutorial.voice
 
 import android.Manifest
-import androidx.appcompat.app.AppCompatActivity
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.navigation.Navigation
+import com.nexmo.client.NexmoCall
+import com.nexmo.client.NexmoCallEventListener
+import com.nexmo.client.NexmoCallHandler
+import com.nexmo.client.NexmoCallMember
+import com.nexmo.client.NexmoCallMemberStatus
 import com.nexmo.client.NexmoClient
+import com.nexmo.client.NexmoMediaActionState
+import com.nexmo.client.request_listener.NexmoApiError
+import com.nexmo.client.request_listener.NexmoConnectionListener.ConnectionStatus
+import com.nexmo.client.request_listener.NexmoRequestListener
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var client: NexmoClient
+    var onGoingCall: NexmoCall? = null
+
+    private lateinit var makeCallButton: Button
+    private lateinit var endCallButton: Button
+    private lateinit var connectionStatusTextView: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val navController = Navigation.findNavController(this, R.id.navHostFragment)
-        NavManager.init(navController)
-
-        val callsPermissions = arrayOf(Manifest.permission.RECORD_AUDIO)
-        ActivityCompat.requestPermissions(this, callsPermissions, 123)
-
-        NexmoClient.Builder().build(this)
+        requestPermissions()
+        initClient()
+        initViews()
     }
 
-    override fun onBackPressed() {
-        val childFragmentManager = supportFragmentManager.primaryNavigationFragment?.childFragmentManager
-        val currentNavigationFragment = childFragmentManager?.fragments?.first()
+    private fun initViews() {
+        makeCallButton = findViewById(R.id.makeCallButton)
+        endCallButton = findViewById(R.id.endCallButton)
+        connectionStatusTextView = findViewById(R.id.connectionStatusTextView)
 
-        if(currentNavigationFragment is BackPressHandler) {
-            currentNavigationFragment.onBackPressed()
+        makeCallButton.setOnClickListener {
+            makeCall()
         }
 
-        super.onBackPressed()
+        endCallButton.setOnClickListener {
+            hangup()
+        }
+    }
+
+    private fun requestPermissions() {
+        val callsPermissions = arrayOf(Manifest.permission.RECORD_AUDIO)
+        ActivityCompat.requestPermissions(this, callsPermissions, 123)
+    }
+
+    private fun initClient() {
+        client = NexmoClient.Builder().build(this)
+
+        client.setConnectionListener { connectionStatus, _ ->
+            runOnUiThread { connectionStatusTextView.text = connectionStatus.toString() }
+
+            if (connectionStatus == ConnectionStatus.CONNECTED) {
+                makeCallButton.visibility = View.VISIBLE
+
+                return@setConnectionListener
+            }
+        }
+
+        client.login("ALICE_TOKEN")
+    }
+
+    @SuppressLint("MissingPermission")
+    fun makeCall() {
+        // Callee number is ignored because it is specified in NCCO config
+        client.call("IGNORED_NUMBER", NexmoCallHandler.SERVER, object : NexmoRequestListener<NexmoCall> {
+            override fun onSuccess(call: NexmoCall?) {
+                endCallButton.visibility = View.VISIBLE
+                makeCallButton.visibility = View.INVISIBLE
+
+                onGoingCall = call
+                onGoingCall?.addCallEventListener(object : NexmoCallEventListener {
+                    override fun onMemberStatusUpdated(callStatus: NexmoCallMemberStatus, callMember: NexmoCallMember) {
+                        if (callStatus == NexmoCallMemberStatus.COMPLETED || callStatus == NexmoCallMemberStatus.CANCELLED) {
+                            onGoingCall = null
+                            endCallButton.visibility = View.INVISIBLE
+                            makeCallButton.visibility = View.VISIBLE
+                        }
+                    }
+
+                    override fun onMuteChanged(nexmoMediaActionState: NexmoMediaActionState, callMember: NexmoCallMember) {}
+
+                    override fun onEarmuffChanged(nexmoMediaActionState: NexmoMediaActionState, callMember: NexmoCallMember) {}
+
+                    override fun onDTMF(dtmf: String, callMember: NexmoCallMember) {}
+                })
+            }
+
+            override fun onError(apiError: NexmoApiError) {
+            }
+        })
+    }
+
+    private fun hangup() {
+        onGoingCall?.hangup(object : NexmoRequestListener<NexmoCall> {
+            override fun onSuccess(call: NexmoCall?) {
+                onGoingCall = null
+            }
+
+            override fun onError(apiError: NexmoApiError) {
+            }
+        })
     }
 }
