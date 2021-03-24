@@ -32,12 +32,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        requestPermissions()
-        initClient()
-        initViews()
-    }
+        // request permissions
+        val callsPermissions = arrayOf(Manifest.permission.RECORD_AUDIO)
+        ActivityCompat.requestPermissions(this, callsPermissions, 123)
 
-    private fun initViews() {
+        // init views
         makeCallButton = findViewById(R.id.makeCallButton)
         endCallButton = findViewById(R.id.endCallButton)
         connectionStatusTextView = findViewById(R.id.connectionStatusTextView)
@@ -49,14 +48,8 @@ class MainActivity : AppCompatActivity() {
         endCallButton.setOnClickListener {
             hangup()
         }
-    }
 
-    private fun requestPermissions() {
-        val callsPermissions = arrayOf(Manifest.permission.RECORD_AUDIO)
-        ActivityCompat.requestPermissions(this, callsPermissions, 123)
-    }
-
-    private fun initClient() {
+        // init client
         client = NexmoClient.Builder().build(this)
 
         client.setConnectionListener { connectionStatus, _ ->
@@ -69,7 +62,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        client.login("ALICE_TOKEN")
+        client.login("ALICE_JWT")
     }
 
     @SuppressLint("MissingPermission")

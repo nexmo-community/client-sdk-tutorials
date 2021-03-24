@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     private NexmoClient client;
     @Nullable private NexmoCall onGoingCall;
+
     private Button makeCallButton;
     private Button endCallButton;
     private TextView connectionStatusTextView;
@@ -34,26 +35,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        requestPermissions();
-        initClient();
-        initViews();
-    }
+        // request permissions
+        String[] callsPermissions = { Manifest.permission.RECORD_AUDIO };
+        ActivityCompat.requestPermissions(this, callsPermissions, 123);
 
-    private void initViews() {
+        // init views
         makeCallButton = findViewById(R.id.makeCallButton);
         endCallButton = findViewById(R.id.endCallButton);
         connectionStatusTextView = findViewById(R.id.connectionStatusTextView);
 
         makeCallButton.setOnClickListener(v -> makeCall());
         endCallButton.setOnClickListener(v -> hangup());
-    }
 
-    private void requestPermissions() {
-        String[] callsPermissions = { Manifest.permission.RECORD_AUDIO };
-        ActivityCompat.requestPermissions(this, callsPermissions, 123);
-    }
-
-    private void initClient() {
+        // init client
         client = new NexmoClient.Builder().build(this);
 
         client.setConnectionListener((connectionStatus, connectionStatusReason) -> {
@@ -67,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        client.login("ALICE_TOKEN");
+        client.login("ALICE_JWT");
     }
 
     @SuppressLint("MissingPermission")
