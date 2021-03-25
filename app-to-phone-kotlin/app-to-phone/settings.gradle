@@ -1,2 +1,2 @@
 include ':app'
-rootProject.name = "client-sdk-android-tutorial-voice-app-to-phone-kotlin"
+rootProject.name = "app-to-phone"
