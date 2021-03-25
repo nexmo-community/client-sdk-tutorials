@@ -1,4 +1,4 @@
-package com.vonage.tutorial.voice
+package com.vonage.tutorial.voice.apptophone
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.vonage.tutorial.voice", appContext.packageName)
+        assertEquals("com.vonage.tutorial.voice.apptophone", appContext.packageName)
     }
 }

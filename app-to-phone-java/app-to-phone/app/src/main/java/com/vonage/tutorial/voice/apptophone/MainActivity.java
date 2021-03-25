@@ -1,4 +1,4 @@
-package com.vonage.tutorial.voice;
+package com.vonage.tutorial.voice.apptophone;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
