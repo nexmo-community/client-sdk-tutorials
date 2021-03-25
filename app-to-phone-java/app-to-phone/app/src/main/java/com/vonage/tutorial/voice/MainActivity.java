@@ -24,7 +24,8 @@ import com.nexmo.client.request_listener.NexmoRequestListener;
 public class MainActivity extends AppCompatActivity {
 
     private NexmoClient client;
-    @Nullable private NexmoCall onGoingCall;
+    @Nullable
+    private NexmoCall onGoingCall;
 
     private Button makeCallButton;
     private Button endCallButton;
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // request permissions
-        String[] callsPermissions = { Manifest.permission.RECORD_AUDIO };
+        String[] callsPermissions = {Manifest.permission.RECORD_AUDIO};
         ActivityCompat.requestPermissions(this, callsPermissions, 123);
 
         // init views
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
             if (connectionStatus == ConnectionStatus.CONNECTED) {
                 runOnUiThread(() -> {
                     makeCallButton.setVisibility(View.VISIBLE);
-                };
+                });
             }
         });
 
@@ -77,9 +78,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(@Nullable NexmoCall call) {
                 runOnUiThread(() -> {
-                            endCallButton.setVisibility(View.VISIBLE);
-                            makeCallButton.setVisibility(View.INVISIBLE);
-                        };
+                    endCallButton.setVisibility(View.VISIBLE);
+                    makeCallButton.setVisibility(View.INVISIBLE);
+                });
 
                 onGoingCall = call;
                 onGoingCall.addCallEventListener(new NexmoCallEventListener() {
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                             runOnUiThread(() -> {
                                 endCallButton.setVisibility(View.INVISIBLE);
                                 makeCallButton.setVisibility(View.VISIBLE);
-                            };
+                            });
                         }
                     }
 
