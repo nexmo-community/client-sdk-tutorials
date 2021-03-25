@@ -1,4 +1,4 @@
-package com.vonage.tutorial.voice
+package com.vonage.tutorial.voice.apptophone
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -18,6 +18,7 @@ import com.nexmo.client.NexmoMediaActionState
 import com.nexmo.client.request_listener.NexmoApiError
 import com.nexmo.client.request_listener.NexmoConnectionListener.ConnectionStatus
 import com.nexmo.client.request_listener.NexmoRequestListener
+import com.vonage.tutorial.voice.apptophone.R
 
 class MainActivity : AppCompatActivity() {
 
