@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             runOnUiThread { connectionStatusTextView.text = connectionStatus.toString() }
 
             if (connectionStatus == ConnectionStatus.CONNECTED) {
-                makeCallButton.visibility = View.VISIBLE
+                runOnUiThread { makeCallButton.visibility = View.VISIBLE }
 
                 return@setConnectionListener
             }
@@ -70,16 +70,21 @@ class MainActivity : AppCompatActivity() {
         // Callee number is ignored because it is specified in NCCO config
         client.call("IGNORED_NUMBER", NexmoCallHandler.SERVER, object : NexmoRequestListener<NexmoCall> {
             override fun onSuccess(call: NexmoCall?) {
-                endCallButton.visibility = View.VISIBLE
-                makeCallButton.visibility = View.INVISIBLE
+                runOnUiThread {
+                    endCallButton.visibility = View.VISIBLE
+                    makeCallButton.visibility = View.INVISIBLE
+                }
 
                 onGoingCall = call
                 onGoingCall?.addCallEventListener(object : NexmoCallEventListener {
                     override fun onMemberStatusUpdated(callStatus: NexmoCallMemberStatus, callMember: NexmoCallMember) {
                         if (callStatus == NexmoCallMemberStatus.COMPLETED || callStatus == NexmoCallMemberStatus.CANCELLED) {
                             onGoingCall = null
-                            endCallButton.visibility = View.INVISIBLE
-                            makeCallButton.visibility = View.VISIBLE
+
+                            runOnUiThread {
+                                endCallButton.visibility = View.INVISIBLE
+                                makeCallButton.visibility = View.VISIBLE
+                            }
                         }
                     }
 

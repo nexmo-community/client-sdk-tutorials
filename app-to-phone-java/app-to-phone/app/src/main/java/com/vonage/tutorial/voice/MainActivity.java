@@ -56,8 +56,9 @@ public class MainActivity extends AppCompatActivity {
             });
 
             if (connectionStatus == ConnectionStatus.CONNECTED) {
-                makeCallButton.setVisibility(View.VISIBLE);
-                return;
+                runOnUiThread(() -> {
+                    makeCallButton.setVisibility(View.VISIBLE);
+                };
             }
         });
 
@@ -75,8 +76,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(@Nullable NexmoCall call) {
-                endCallButton.setVisibility(View.VISIBLE);
-                makeCallButton.setVisibility(View.INVISIBLE);
+                runOnUiThread(() -> {
+                            endCallButton.setVisibility(View.VISIBLE);
+                            makeCallButton.setVisibility(View.INVISIBLE);
+                        };
 
                 onGoingCall = call;
                 onGoingCall.addCallEventListener(new NexmoCallEventListener() {
@@ -84,8 +87,11 @@ public class MainActivity extends AppCompatActivity {
                     public void onMemberStatusUpdated(NexmoCallMemberStatus callStatus, NexmoCallMember nexmoCallMember) {
                         if (callStatus == NexmoCallMemberStatus.COMPLETED || callStatus == NexmoCallMemberStatus.CANCELLED) {
                             onGoingCall = null;
-                            endCallButton.setVisibility(View.INVISIBLE);
-                            makeCallButton.setVisibility(View.VISIBLE);
+
+                            runOnUiThread(() -> {
+                                endCallButton.setVisibility(View.INVISIBLE);
+                                makeCallButton.setVisibility(View.VISIBLE);
+                            };
                         }
                     }
 
