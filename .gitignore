@@ -7,3 +7,8 @@ app-to-phone-swift/node_modules/*
 app-to-phone-swift/AppToPhone/Pods/*
 app-to-phone-objc/node_modules/*
 app-to-phone-objc/AppToPhone/Pods/*
+
+app-to-app-swift/node_modules/*
+app-to-app-swift/AppToApp/Pods/*
+app-to-app-objc/node_modules/*
+app-to-app-objc/AppToApp/Pods/*
