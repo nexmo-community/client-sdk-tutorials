@@ -3,10 +3,16 @@ private.key
 .DS_Store
 
 app-to-phone-js/node_modules/*
+
 app-to-phone-swift/node_modules/*
 app-to-phone-swift/AppToPhone/Pods/*
 app-to-phone-objc/node_modules/*
 app-to-phone-objc/AppToPhone/Pods/*
+
+phone-to-app-swift/node_modules/*
+phone-to-app-swift/PhoneToApp/Pods/*
+phone-to-app-objc/node_modules/*
+phone-to-app-objc/PhoneToApp/Pods/*
 
 app-to-app-swift/node_modules/*
 app-to-app-swift/AppToApp/Pods/*
