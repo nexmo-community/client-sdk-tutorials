@@ -68,8 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("MissingPermission")
     private void makeCall() {
-        // Callee number is ignored because it is specified in NCCO config
-        client.call("IGNORED_NUMBER", NexmoCallHandler.SERVER, new NexmoRequestListener<NexmoCall>() {
+        client.call("PHONE_NUMBER", NexmoCallHandler.SERVER, new NexmoRequestListener<NexmoCall>() {
             @Override
             public void onError(@NonNull NexmoApiError nexmoApiError) {
 
