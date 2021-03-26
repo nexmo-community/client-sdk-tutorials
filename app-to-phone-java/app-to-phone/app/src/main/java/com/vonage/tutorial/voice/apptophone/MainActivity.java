@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     @Nullable
     private NexmoCall onGoingCall;
 
-    private Button makeCallButton;
+    private Button startCallButton;
     private Button endCallButton;
     private TextView connectionStatusTextView;
 
@@ -41,11 +41,11 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, callsPermissions, 123);
 
         // init views
-        makeCallButton = findViewById(R.id.makeCallButton);
+        startCallButton = findViewById(R.id.startCallButton);
         endCallButton = findViewById(R.id.endCallButton);
         connectionStatusTextView = findViewById(R.id.connectionStatusTextView);
 
-        makeCallButton.setOnClickListener(v -> makeCall());
+        startCallButton.setOnClickListener(v -> startCall());
         endCallButton.setOnClickListener(v -> hangup());
 
         // init client
@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (connectionStatus == ConnectionStatus.CONNECTED) {
                 runOnUiThread(() -> {
-                    makeCallButton.setVisibility(View.VISIBLE);
+                    startCallButton.setVisibility(View.VISIBLE);
                 });
             }
         });
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("MissingPermission")
-    private void makeCall() {
+    private void startCall() {
         client.call("PHONE_NUMBER", NexmoCallHandler.SERVER, new NexmoRequestListener<NexmoCall>() {
             @Override
             public void onError(@NonNull NexmoApiError nexmoApiError) {
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(@Nullable NexmoCall call) {
                 runOnUiThread(() -> {
                     endCallButton.setVisibility(View.VISIBLE);
-                    makeCallButton.setVisibility(View.INVISIBLE);
+                    startCallButton.setVisibility(View.INVISIBLE);
                 });
 
                 onGoingCall = call;
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
                             runOnUiThread(() -> {
                                 endCallButton.setVisibility(View.INVISIBLE);
-                                makeCallButton.setVisibility(View.VISIBLE);
+                                startCallButton.setVisibility(View.VISIBLE);
                             });
                         }
                     }

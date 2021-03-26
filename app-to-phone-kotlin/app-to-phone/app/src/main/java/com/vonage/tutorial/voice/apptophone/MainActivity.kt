@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var client: NexmoClient
     var onGoingCall: NexmoCall? = null
 
-    private lateinit var makeCallButton: Button
+    private lateinit var startCallButton: Button
     private lateinit var endCallButton: Button
     private lateinit var connectionStatusTextView: TextView
 
@@ -38,12 +38,12 @@ class MainActivity : AppCompatActivity() {
         ActivityCompat.requestPermissions(this, callsPermissions, 123)
 
         // init views
-        makeCallButton = findViewById(R.id.makeCallButton)
+        startCallButton = findViewById(R.id.makeCallButton)
         endCallButton = findViewById(R.id.endCallButton)
         connectionStatusTextView = findViewById(R.id.connectionStatusTextView)
 
-        makeCallButton.setOnClickListener {
-            makeCall()
+        startCallButton.setOnClickListener {
+            startCall()
         }
 
         endCallButton.setOnClickListener {
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             runOnUiThread { connectionStatusTextView.text = connectionStatus.toString() }
 
             if (connectionStatus == ConnectionStatus.CONNECTED) {
-                runOnUiThread { makeCallButton.visibility = View.VISIBLE }
+                runOnUiThread { startCallButton.visibility = View.VISIBLE }
 
                 return@setConnectionListener
             }
@@ -67,12 +67,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("MissingPermission")
-    fun makeCall() {
+    fun startCall() {
         client.call("PHONE_NUMBER", NexmoCallHandler.SERVER, object : NexmoRequestListener<NexmoCall> {
             override fun onSuccess(call: NexmoCall?) {
                 runOnUiThread {
                     endCallButton.visibility = View.VISIBLE
-                    makeCallButton.visibility = View.INVISIBLE
+                    startCallButton.visibility = View.INVISIBLE
                 }
 
                 onGoingCall = call
@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
                             runOnUiThread {
                                 endCallButton.visibility = View.INVISIBLE
-                                makeCallButton.visibility = View.VISIBLE
+                                startCallButton.visibility = View.VISIBLE
                             }
                         }
                     }

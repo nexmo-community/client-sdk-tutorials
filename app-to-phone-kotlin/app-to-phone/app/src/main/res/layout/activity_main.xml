@@ -6,7 +6,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center"
-        tools:context=".apptophone.MainActivity">
+        tools:context=".MainActivity">
 
     <TextView
             android:id="@+id/connectionStatusTextView"
@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:text="Make phone call"
+            android:text="Start call"
             android:visibility="gone"
             tools:visibility="visible"/>
 
