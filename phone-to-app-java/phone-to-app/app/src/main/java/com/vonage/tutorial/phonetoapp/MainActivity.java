@@ -17,7 +17,6 @@ import com.nexmo.client.NexmoClient;
 import com.nexmo.client.request_listener.NexmoApiError;
 import com.nexmo.client.request_listener.NexmoRequestListener;
 
-@SuppressLint("MissingPermission")
 public class MainActivity extends AppCompatActivity {
 
     private NexmoCall call;
@@ -65,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         client.login("ALICE_JWT");
     }
 
+    @SuppressLint("MissingPermission")
     private void answerCall() {
         call.answer(new NexmoRequestListener<NexmoCall>() {
             @Override
