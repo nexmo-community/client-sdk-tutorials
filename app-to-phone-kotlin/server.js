@@ -1,4 +1,7 @@
 'use strict';
+
+const subdomain = 'SUBDOMAIN';
+
 const express = require('express')
 const app = express();
 app.use(express.json());
@@ -28,13 +31,17 @@ app.all('/voice/event', (req, res) => {
   res.sendStatus(200);
 });
 
+if(subdomain == "SUBDOMAIN") {
+  console.log('\n\t🚨🚨🚨 Please change the SUBDOMAIN value');
+  return false;
+}
 app.listen(3000);
 
 
 const localtunnel = require('localtunnel');
 (async () => {
   const tunnel = await localtunnel({ 
-      subdomain: 'SUBDOMAIN', 
+      subdomain: subdomain, 
       port: 3000
     });
   console.log(`App available at: ${tunnel.url}`);
