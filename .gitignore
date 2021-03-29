@@ -4,6 +4,7 @@ private.key
 **/.DS_Store
 
 app-to-phone-js/node_modules/*
+phone-to-app-js/node_modules/*
 
 app-to-phone-swift/node_modules/*
 app-to-phone-swift/AppToPhone/Pods/*
