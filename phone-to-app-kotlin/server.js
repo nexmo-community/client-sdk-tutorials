@@ -14,11 +14,11 @@ app.get('/voice/answer', (req, res) => {
   res.json([ 
     { 
       "action": "talk", 
+      "from": req.query.from,
       "text": "Please wait while we connect you."
     },
     { 
       "action": "connect", 
-      "from": req.query.from,
       "endpoint": [ 
         { "type": "app", "user": "Alice" } 
       ]
