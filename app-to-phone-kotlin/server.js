@@ -8,7 +8,6 @@ app.use(express.json());
 
 app.get('/voice/answer', (req, res) => {
   console.log('NCCO request:');
-  console.log(`  - caller: ${req.query.from}`);
   console.log(`  - callee: ${req.query.to}`);
   console.log('---');
   res.json([ 
@@ -19,7 +18,7 @@ app.get('/voice/answer', (req, res) => {
     { 
       "action": "connect", 
       "endpoint": [ 
-        { "type": "app", "user": "Alice" } 
+        { "type": "phone", "number": req.query.to } 
       ]
     }
   ]);
@@ -37,6 +36,7 @@ if(subdomain == "SUBDOMAIN") {
   return false;
 }
 app.listen(3000);
+
 
 const localtunnel = require('localtunnel');
 (async () => {
