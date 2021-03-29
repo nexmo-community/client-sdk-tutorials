@@ -18,6 +18,7 @@ app.get('/voice/answer', (req, res) => {
     },
     { 
       "action": "connect", 
+      "from": req.query.from,
       "endpoint": [ 
         { "type": "app", "user": "Alice" } 
       ]
