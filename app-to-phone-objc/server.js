@@ -24,10 +24,6 @@ app.get('/voice/answer', (req, res) => {
   ]);
 });
 
-if(subdomain == "SUBDOMAIN") {
-  console.log('\n\t🚨🚨🚨 Please change the SUBDOMAIN value');
-  return false;
-}
 
 app.all('/voice/event', (req, res) => {
   console.log('EVENT:');
@@ -36,6 +32,10 @@ app.all('/voice/event', (req, res) => {
   res.sendStatus(200);
 });
 
+if(subdomain == "SUBDOMAIN") {
+  console.log('\n\t🚨🚨🚨 Please change the SUBDOMAIN value');
+  return false;
+}
 app.listen(3000);
 
 
