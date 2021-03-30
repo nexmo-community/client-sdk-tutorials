@@ -1,28 +1,33 @@
 'use strict';
+
+const subdomain = 'SUBDOMAIN';
+
 const express = require('express')
 const app = express();
 app.use(express.json());
 
 app.get('/voice/answer', (req, res) => {
   console.log('NCCO request:');
-  console.log(`  - callee: ${req.query.to}`);
+  console.log(`  - callee: ${req.query.from_user}`);
   console.log('---');
   res.json([ 
-    {
-        "action": "talk",
-        "text": "Connecting you to Bob"
+    { 
+      "action": "talk", 
+      "text": "Please wait while we connect you."
     },
-    {
-        "action": "connect",
-        "endpoint": [
-            {
-                "type": "app",
-                "user": "Bob"
-            }
-        ]
+    { 
+      "action": "connect", 
+      "endpoint": [ 
+        { "type": "app", "user": req.query.to } 
+      ]
     }
   ]);
 });
+
+if(subdomain == "SUBDOMAIN") {
+  console.log('\n\t🚨🚨🚨 Please change the SUBDOMAIN value');
+  return false;
+}
 
 app.all('/voice/event', (req, res) => {
   console.log('EVENT:');
@@ -30,14 +35,12 @@ app.all('/voice/event', (req, res) => {
   console.log('---');
   res.sendStatus(200);
 });
-
 app.listen(3000);
-
 
 const localtunnel = require('localtunnel');
 (async () => {
   const tunnel = await localtunnel({ 
-      subdomain: 'SUBDOMAIN', 
+      subdomain: subdomain, 
       port: 3000
     });
   console.log(`App available at: ${tunnel.url}`);
