@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="./node_modules/nexmo-client/dist/nexmoClient.js"></script>
+  </head>
+  <body>
+    <h1>Inbound app call</h1>
+    <p id="notification">Lines are open for calls...</p>
+    <br />
+    <button id="button">Answer</button>
+    <script>
+
+      const bobJWT ="PASTE BOB JWT HERE";
+
+      new NexmoClient({ debug: true })
+        .login(bobJWT)
+        .then(app => {
+          let btn = document.getElementById("button");
+          let notification = document.getElementById("notification");
+          app.on("member:call", (member, call) => {
+            notification.innerHTML = "Inbound app call - click to answer...";
+            btn.addEventListener("click", event => {
+              event.preventDefault();
+              call.answer();
+            });
+          });
+          app.on("call:status:changed", call => {
+            notification.innerHTML = "Call Status: " + call.status;
+          });
+        })
+        .catch(console.error);
+    </script>
+  </body>
+</html>
