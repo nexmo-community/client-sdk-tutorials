@@ -24,7 +24,6 @@ app.get('/voice/answer', (req, res) => {
   ]);
 });
 
-
 app.all('/voice/event', (req, res) => {
   console.log('EVENT:');
   console.dir(req.body);
@@ -37,7 +36,6 @@ if(subdomain == "SUBDOMAIN") {
   return false;
 }
 app.listen(3000);
-
 
 const localtunnel = require('localtunnel');
 (async () => {

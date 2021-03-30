@@ -1,15 +1,6 @@
-//
-//  CallViewController.m
-//  AppToAppCall
-//
-//  Created by Abdulhakim Ajetunmobi on 25/08/2020.
-//  Copyright © 2020 Vonage. All rights reserved.
-//
-
-#import "CallViewController.h"
 #import "User.h"
+#import "CallViewController.h"
 #import <NexmoClient/NexmoClient.h>
-
 
 @interface CallViewController () <NXMCallDelegate>
 @property UIButton *callButton;
@@ -37,11 +28,7 @@
     self.view.backgroundColor = UIColor.systemBackgroundColor;
     
     self.callButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [self.callButton setTitle:[NSString stringWithFormat:@"Call %@", self.user.callPartnerName] forState:UIControlStateNormal];
     self.callButton.translatesAutoresizingMaskIntoConstraints = NO;
-    if ([self.user.name isEqualToString:@"Alice"]) {
-        [self.callButton setAlpha:0];
-    }
     [self.view addSubview:self.callButton];
     
     self.hangUpButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -74,23 +61,13 @@
     ]];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStyleDone target:self action:@selector(logout)];
+    [self.callButton setTitle:[NSString stringWithFormat:@"Call %@", self.user.callPartnerName] forState:UIControlStateNormal];
     
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didReceiveCall:) name:@"NXMClient.incommingCall" object:nil];
+    
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didReceiveCall:) name:@"NXMClient.incomingCall" object:nil];
     
     [self.hangUpButton addTarget:self action:@selector(endCall) forControlEvents:UIControlEventTouchUpInside];
     [self.callButton addTarget:self action:@selector(makeCall) forControlEvents:UIControlEventTouchUpInside];
-}
-
-- (void)logout {
-    [self.client logout];
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)didReceiveCall:(NSNotification *)notification {
-    NXMCall *call = (NXMCall *)notification.object;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self displayIncomingCallAlert:call];
-    });
 }
 
 - (void)makeCall {
@@ -108,10 +85,11 @@
     }];
 }
 
-- (void)endCall {
-    [self.call hangup];
-    [self setHangUpButtonHidden:YES];
-    [self setStatusLabelText:@"Ready to receive call..."];
+- (void)didReceiveCall:(NSNotification *)notification {
+    NXMCall *call = (NXMCall *)notification.object;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self displayIncomingCallAlert:call];
+    });
 }
 
 - (void)displayIncomingCallAlert:(NXMCall *)call {
@@ -120,6 +98,8 @@
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Incoming call from" message:from preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:@"Answer" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         self.call = call;
+        [self setHangUpButtonHidden:NO];
+        [self setStatusLabelText:[NSString stringWithFormat:@"On a call with %@", from]];
         [call answer:nil];
     }]];
     [alert addAction:[UIAlertAction actionWithTitle:@"Reject" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
@@ -127,6 +107,17 @@
     }]];
     
     [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)endCall {
+    [self.call hangup];
+    [self setHangUpButtonHidden:YES];
+    [self setStatusLabelText:@"Ready to receive call..."];
+}
+
+- (void)logout {
+    [self.client logout];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)setHangUpButtonHidden:(BOOL)isHidden {
@@ -145,7 +136,9 @@
 - (void)call:(NXMCall *)call didUpdate:(NXMCallMember *)callMember withStatus:(NXMCallMemberStatus)status {
     switch (status) {
         case NXMCallMemberStatusAnswered:
-            [self setStatusLabelText:[NSString stringWithFormat:@"On a call with %@", callMember.user.name]];
+            if (![callMember.user.name isEqualToString:self.user.name]) {
+                [self setStatusLabelText:[NSString stringWithFormat:@"On a call with %@", callMember.user.name]];
+            }
             break;
         case NXMCallMemberStatusCompleted:
             [self setStatusLabelText:@"Call ended"];

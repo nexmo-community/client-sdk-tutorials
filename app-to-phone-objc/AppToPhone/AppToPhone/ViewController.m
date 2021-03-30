@@ -1,11 +1,3 @@
-//
-//  ViewController.m
-//  AppToPhone
-//
-//  Created by Abdulhakim Ajetunmobi on 19/08/2020.
-//  Copyright © 2020 Vonage. All rights reserved.
-//
-
 #import "ViewController.h"
 #import <NexmoClient/NexmoClient.h>
 
@@ -65,7 +57,6 @@
         }
         
         self.call = call;
-        
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.callButton setTitle:@"End call" forState:UIControlStateNormal];
         });
@@ -101,6 +92,4 @@
         [self.callButton setAlpha:0];
     });
 }
-
-
 @end
