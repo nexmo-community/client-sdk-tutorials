@@ -8,26 +8,30 @@ app.use(express.json());
 
 app.get('/voice/answer', (req, res) => {
   console.log('NCCO request:');
-  console.log(`  - callee: ${req.query.from_user}`);
+  console.log(`  - caller: ${req.query.from}`);
+  console.log(`  - callee: ${req.query.to}`);
   console.log('---');
-  res.json([ 
-    { 
-      "action": "talk", 
-      "text": "Please wait while we connect you."
-    },
-    { 
-      "action": "connect", 
-      "endpoint": [ 
-        { "type": "app", "user": req.query.to } 
-      ]
-    }
-  ]);
+  var ncco = [{"action": "talk", "text": "No destination user - hanging up"}];
+  var username = req.query.to;
+  if (username) {
+    ncco = [
+      {
+        "action": "talk",
+        "text": "Connecting you to " + username
+      },
+      {
+        "action": "connect",
+        "endpoint": [
+          {
+            "type": "app",
+            "user": username
+          }
+        ]
+      }
+    ]
+  }
+  res.json(ncco);
 });
-
-if(subdomain == "SUBDOMAIN") {
-  console.log('\n\t🚨🚨🚨 Please change the SUBDOMAIN value');
-  return false;
-}
 
 app.all('/voice/event', (req, res) => {
   console.log('EVENT:');
@@ -35,6 +39,11 @@ app.all('/voice/event', (req, res) => {
   console.log('---');
   res.sendStatus(200);
 });
+
+if(subdomain == "SUBDOMAIN") {
+  console.log('\n\t🚨🚨🚨 Please change the SUBDOMAIN value');
+  return false;
+}
 app.listen(3000);
 
 const localtunnel = require('localtunnel');
