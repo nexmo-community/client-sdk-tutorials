@@ -164,7 +164,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     @SuppressLint("MissingPermission")
     private void answerCall() {
         onGoingCall.answer(new NexmoRequestListener<NexmoCall>() {
