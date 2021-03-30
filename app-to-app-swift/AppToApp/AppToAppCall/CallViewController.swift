@@ -1,25 +1,17 @@
-//
-//  CallViewController.swift
-//  AppToAppCall
-//
-//  Created by Abdulhakim Ajetunmobi on 28/07/2020.
-//  Copyright © 2020 Vonage. All rights reserved.
-//
-
 import UIKit
 import NexmoClient
 
 class CallViewController: UIViewController {
+    
+    let callButton = UIButton(type: .system)
+    let hangUpButton = UIButton(type: .system)
+    let statusLabel = UILabel()
     
     let user: User
     let client = NXMClient.shared
     let nc = NotificationCenter.default
     
     var call: NXMCall?
-    
-    let callButton = UIButton(type: .system)
-    let hangUpButton = UIButton(type: .system)
-    let statusLabel = UILabel()
     
     init(user: User) {
         self.user = user
@@ -34,15 +26,12 @@ class CallViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         
-        callButton.setTitle("Call \(user.callPartnerName)", for: .normal)
         callButton.translatesAutoresizingMaskIntoConstraints = false
-        if user.name == "Alice" {
-            callButton.alpha = 0
-        }
         view.addSubview(callButton)
         
         hangUpButton.setTitle("Hang up", for: .normal)
         hangUpButton.translatesAutoresizingMaskIntoConstraints = false
+        
         setHangUpButtonHidden(true)
         view.addSubview(hangUpButton)
         
@@ -67,19 +56,30 @@ class CallViewController: UIViewController {
             statusLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             statusLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
-    
+        
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .done, target: self, action: #selector(self.logout))
+        callButton.setTitle("Call \(user.callPartnerName)", for: .normal)
+        
         nc.addObserver(self, selector: #selector(didReceiveCall), name: .call, object: nil)
         
         hangUpButton.addTarget(self, action: #selector(endCall), for: .touchUpInside)
         callButton.addTarget(self, action: #selector(makeCall), for: .touchUpInside)
     }
     
-    @objc private func logout() {
-        client.logout()
-        dismiss(animated: true, completion: nil)
+    @objc private func makeCall() {
+        setStatusLabelText("Calling \(user.callPartnerName)")
+        
+        client.call(user.callPartnerName, callHandler: .server) { error, call in
+            if error != nil {
+                self.setStatusLabelText(error?.localizedDescription)
+                return
+            }
+            call?.setDelegate(self)
+            self.setHangUpButtonHidden(false)
+            self.call = call
+        }
     }
-
+    
     @objc private func didReceiveCall(_ notification: Notification) {
         guard let call = notification.object as? NXMCall else { return }
         DispatchQueue.main.async { [weak self] in
@@ -92,7 +92,7 @@ class CallViewController: UIViewController {
         if let otherParty = call.otherCallMembers.firstObject as? NXMCallMember {
             from = otherParty.user.name
         }
-
+        
         let alert = UIAlertController(title: "Incoming call from", message: from, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Answer", style: .default, handler: { _ in
             call.answer { error in
@@ -106,11 +106,11 @@ class CallViewController: UIViewController {
                 self.call = call
             }
         }))
-
+        
         alert.addAction(UIAlertAction(title: "Reject", style: .destructive, handler: { _ in
             call.reject(nil)
         }))
-
+        
         self.present(alert, animated: true, completion: nil)
     }
     
@@ -119,21 +119,11 @@ class CallViewController: UIViewController {
         self.setHangUpButtonHidden(true)
         self.setStatusLabelText("Ready to receive call...")
     }
-
-    @objc private func makeCall() {
-        setStatusLabelText("Calling \(user.callPartnerName)")
-
-        client.call(user.callPartnerName, callHandler: .server) { error, call in
-            if error != nil {
-                self.setStatusLabelText(error?.localizedDescription)
-                return
-            }
-            call?.setDelegate(self)
-            self.setHangUpButtonHidden(false)
-            self.call = call
-        }
+    
+    @objc func logout() {
+        client.logout()
+        dismiss(animated: true, completion: nil)
     }
-
     
     private func setHangUpButtonHidden(_ isHidden: Bool) {
         DispatchQueue.main.async { [weak self] in
@@ -165,11 +155,10 @@ extension CallViewController: NXMCallDelegate {
             break
         }
     }
-
+    
     func call(_ call: NXMCall, didReceive error: Error) {
         setStatusLabelText(error.localizedDescription)
     }
-
+    
     func call(_ call: NXMCall, didUpdate callMember: NXMCallMember, isMuted muted: Bool) {}
 }
-
