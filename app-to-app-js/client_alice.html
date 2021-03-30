@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="./node_modules/nexmo-client/dist/nexmoClient.js"></script>
+  </head>
+  <body>
+    <h1>App from App Call (Alice)</h1>
+    <button id="btn-call" type="button">Call</button>
+    <button id="btn-hangup" type="button">Hang Up</button>
+    <script>
+
+      const aliceJWT = "PASTE ALICE JWT HERE";
+
+      const btnCall = document.getElementById("btn-call");
+      const btnHangUp = document.getElementById("btn-hangup");
+      new NexmoClient({ debug: true })
+        .login(aliceJWT)
+        .then(app => {
+          btnCall.addEventListener("click", () => {
+            console.log("Calling Bob...");
+            app.callServer("Bob", "app");
+          });
+          app.on("member:call", (member, call) => {
+            btnHangUp.addEventListener("click", () => {
+              console.log("Hanging up...");
+              call.hangUp();
+            });
+          });
+        })
+        .catch(console.error);
+    </script>
+  </body>
+</html>
