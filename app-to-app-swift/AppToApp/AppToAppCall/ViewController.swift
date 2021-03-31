@@ -1,11 +1,3 @@
-//
-//  ViewController.swift
-//  AppToAppCall
-//
-//  Created by Abdulhakim Ajetunmobi on 28/07/2020.
-//  Copyright © 2020 Vonage. All rights reserved.
-//
-
 import UIKit
 import NexmoClient
 
@@ -62,6 +54,12 @@ class ViewController: UIViewController {
         loginBobButton.addTarget(self, action: #selector(setUserAsBob), for: .touchUpInside)
     }
     
+    func login() {
+        guard let user = self.user else { return }
+        client.setDelegate(self)
+        client.login(withAuthToken: user.jwt)
+    }
+    
     @objc func setUserAsAlice() {
         self.user = User.Alice
     }
@@ -69,20 +67,12 @@ class ViewController: UIViewController {
     @objc func setUserAsBob() {
         self.user = User.Bob
     }
-    
-    func login() {
-        guard let user = self.user else { return }
-        client.login(withAuthToken: user.jwt)
-        client.setDelegate(self)
-    }
-    
 }
 
 extension ViewController: NXMClientDelegate {
     func client(_ client: NXMClient, didChange status: NXMConnectionStatus, reason: NXMConnectionStatusReason) {
         DispatchQueue.main.async {
             guard let user = self.user else { return }
-            
             switch status {
             case .connected:
                 self.statusLabel.text = "Connected"
@@ -128,5 +118,3 @@ struct User {
                           jwt:"BOB_JWT",
                           callPartnerName: "Alice")
 }
-
-

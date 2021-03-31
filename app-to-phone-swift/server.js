@@ -37,7 +37,6 @@ if(subdomain == "SUBDOMAIN") {
 }
 app.listen(3000);
 
-
 const localtunnel = require('localtunnel');
 (async () => {
   const tunnel = await localtunnel({ 
