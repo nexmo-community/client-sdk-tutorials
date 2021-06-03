@@ -11,7 +11,7 @@ import androidx.core.app.ActivityCompat
 import com.nexmo.client.NexmoCall
 import com.nexmo.client.NexmoCallEventListener
 import com.nexmo.client.NexmoCallHandler
-import com.nexmo.client.NexmoCallMember
+import com.nexmo.client.NexmoMember
 import com.nexmo.client.NexmoCallMemberStatus
 import com.nexmo.client.NexmoClient
 import com.nexmo.client.NexmoMediaActionState
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
 
                 onGoingCall = call
                 onGoingCall?.addCallEventListener(object : NexmoCallEventListener {
-                    override fun onMemberStatusUpdated(callStatus: NexmoCallMemberStatus, callMember: NexmoCallMember) {
+                    override fun onMemberStatusUpdated(callStatus: NexmoCallMemberStatus, callMember: NexmoMember) {
                         if (callStatus == NexmoCallMemberStatus.COMPLETED || callStatus == NexmoCallMemberStatus.CANCELLED) {
                             onGoingCall = null
 
@@ -88,11 +88,11 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
-                    override fun onMuteChanged(nexmoMediaActionState: NexmoMediaActionState, callMember: NexmoCallMember) {}
+                    override fun onMuteChanged(nexmoMediaActionState: NexmoMediaActionState, callMember: NexmoMember) {}
 
-                    override fun onEarmuffChanged(nexmoMediaActionState: NexmoMediaActionState, callMember: NexmoCallMember) {}
+                    override fun onEarmuffChanged(nexmoMediaActionState: NexmoMediaActionState, callMember: NexmoMember) {}
 
-                    override fun onDTMF(dtmf: String, callMember: NexmoCallMember) {}
+                    override fun onDTMF(dtmf: String, callMember: NexmoMember) {}
                 })
             }
 
