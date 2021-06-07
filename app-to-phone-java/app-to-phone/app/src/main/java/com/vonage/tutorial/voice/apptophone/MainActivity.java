@@ -13,7 +13,7 @@ import androidx.core.app.ActivityCompat;
 import com.nexmo.client.NexmoCall;
 import com.nexmo.client.NexmoCallEventListener;
 import com.nexmo.client.NexmoCallHandler;
-import com.nexmo.client.NexmoCallMember;
+import com.nexmo.client.NexmoMember;
 import com.nexmo.client.NexmoCallMemberStatus;
 import com.nexmo.client.NexmoClient;
 import com.nexmo.client.NexmoMediaActionState;
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 onGoingCall = call;
                 onGoingCall.addCallEventListener(new NexmoCallEventListener() {
                     @Override
-                    public void onMemberStatusUpdated(NexmoCallMemberStatus callStatus, NexmoCallMember nexmoCallMember) {
+                    public void onMemberStatusUpdated(NexmoCallMemberStatus callStatus, NexmoMember NexmoMember) {
                         if (callStatus == NexmoCallMemberStatus.COMPLETED || callStatus == NexmoCallMemberStatus.CANCELLED) {
                             onGoingCall = null;
 
@@ -96,17 +96,17 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onMuteChanged(NexmoMediaActionState nexmoMediaActionState, NexmoCallMember nexmoCallMember) {
+                    public void onMuteChanged(NexmoMediaActionState nexmoMediaActionState, NexmoMember NexmoMember) {
 
                     }
 
                     @Override
-                    public void onEarmuffChanged(NexmoMediaActionState nexmoMediaActionState, NexmoCallMember nexmoCallMember) {
+                    public void onEarmuffChanged(NexmoMediaActionState nexmoMediaActionState, NexmoMember NexmoMember) {
 
                     }
 
                     @Override
-                    public void onDTMF(String s, NexmoCallMember nexmoCallMember) {
+                    public void onDTMF(String s, NexmoMember NexmoMember) {
 
                     }
                 });
