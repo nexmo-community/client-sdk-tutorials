@@ -22,5 +22,5 @@ jobs:
           java-version: 15
 
       - name: Build
-        run: cd phone-to-app-kotlin/phone-to-app && ./gradlew app:assembleRelease && cd ..
+        run: cd phone-to-app-kotlin/phone-to-app && ./gradlew app:assembleDebug && cd ..
         
