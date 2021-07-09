@@ -30,7 +30,7 @@
 }
 
 - (void)displayIncomingCallAlert:(NXMCall *)call {
-    NSString *from = call.otherCallMembers.firstObject.channel.from.data;
+    NSString *from = call.allMembers.firstObject.channel.from.data;
     
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Incoming call from" message:from preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:@"Answer" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
