@@ -1,5 +1,5 @@
 PODS:
-  - NexmoClient (2.2.0)
+  - NexmoClient (3.0.0)
 
 DEPENDENCIES:
   - NexmoClient
@@ -9,7 +9,7 @@ SPEC REPOS:
     - NexmoClient
 
 SPEC CHECKSUMS:
-  NexmoClient: 5babd70e7db8a71130966f144ff0cdd01f54deb8
+  NexmoClient: 5c31d670aa820ceaee5de5212fdd9f45b71c6c18
 
 PODFILE CHECKSUM: 332dd59ed66eefa9e296a19a388b8498b4548a58
 
