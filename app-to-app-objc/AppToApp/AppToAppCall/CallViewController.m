@@ -93,7 +93,7 @@
 }
 
 - (void)displayIncomingCallAlert:(NXMCall *)call {
-    NSString *from = call.otherCallMembers.firstObject.channel.from.data;
+    NSString *from = call.allMembers.firstObject.user.name;
     
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Incoming call from" message:from preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:@"Answer" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
@@ -133,7 +133,7 @@
     });
 }
 
-- (void)call:(NXMCall *)call didUpdate:(NXMCallMember *)callMember withStatus:(NXMCallMemberStatus)status {
+- (void)call:(NXMCall *)call didUpdate:(NXMMember *)callMember withStatus:(NXMCallMemberStatus)status {
     switch (status) {
         case NXMCallMemberStatusAnswered:
             if (![callMember.user.name isEqualToString:self.user.name]) {
@@ -154,6 +154,6 @@
     [self setStatusLabelText:error.localizedDescription];
 }
 
-- (void)call:(NXMCall *)call didUpdate:(NXMCallMember *)callMember isMuted:(BOOL)muted {}
+- (void)call:(NXMCall *)call didUpdate:(NXMMember *)callMember isMuted:(BOOL)muted {}
 
 @end
