@@ -1,4 +1,4 @@
-name: Build phone-to-app-kotlin
+name: Build build-in-app-messaging-kotlin
 
 on:
   push:
@@ -22,5 +22,5 @@ jobs:
           java-version: 15
 
       - name: Build
-        run: cd phone-to-app-kotlin/phone-to-app && ./gradlew app:assembleDebug && cd ..
+        run: cd in-app-messaging-kotlin && ./gradlew app:assembleDebug && cd ..
         
