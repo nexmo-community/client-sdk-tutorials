@@ -1,6 +1,7 @@
 'use strict';
 
 const subdomain = 'SUBDOMAIN';
+const vonageNumber = 'NUMBER';
 
 const express = require('express')
 const app = express();
@@ -16,7 +17,8 @@ app.get('/voice/answer', (req, res) => {
       "text": "Please wait while we connect you."
     },
     { 
-      "action": "connect", 
+      "action": "connect",
+      "from": vonageNumber,
       "endpoint": [ 
         { "type": "phone", "number": req.query.to } 
       ]
@@ -35,8 +37,11 @@ if(subdomain == "SUBDOMAIN") {
   console.log('\n\t🚨🚨🚨 Please change the SUBDOMAIN value');
   return false;
 }
+if(vonageNumber == "NUMBER") {
+  console.log('\n\t🚨🚨🚨 Please change the NUMBER value');
+  return false;
+}
 app.listen(3000);
-
 
 const localtunnel = require('localtunnel');
 (async () => {
