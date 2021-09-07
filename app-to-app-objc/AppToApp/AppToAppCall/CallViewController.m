@@ -73,7 +73,7 @@
 - (void)makeCall {
     [self setStatusLabelText:[NSString stringWithFormat:@"Calling %@", self.user.callPartnerName]];
     
-    [self.client call:self.user.callPartnerName callHandler:NXMCallHandlerServer completionHandler:^(NSError * _Nullable error, NXMCall * _Nullable call) {
+    [self.client serverCallWithCallee:self.user.callPartnerName customData:nil completionHandler:^(NSError * _Nullable error, NXMCall * _Nullable call) {
         if (error) {
             [self setStatusLabelText:error.localizedDescription];
             return;

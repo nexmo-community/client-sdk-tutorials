@@ -1,5 +1,5 @@
 PODS:
-  - NexmoClient (3.0.0)
+  - NexmoClient (3.1.0)
 
 DEPENDENCIES:
   - NexmoClient
@@ -9,8 +9,8 @@ SPEC REPOS:
     - NexmoClient
 
 SPEC CHECKSUMS:
-  NexmoClient: 5c31d670aa820ceaee5de5212fdd9f45b71c6c18
+  NexmoClient: c2e1f310d93db4e0c3dddbee0230a968fd707bc8
 
 PODFILE CHECKSUM: b898b66fd45ab2b93bdf26a039328e87ebbb965c
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.10.2

@@ -69,7 +69,7 @@ class CallViewController: UIViewController {
     @objc private func makeCall() {
         setStatusLabelText("Calling \(user.callPartnerName)")
         
-        client.call(user.callPartnerName, callHandler: .server) { error, call in
+        client.serverCall(withCallee: user.callPartnerName, customData: nil) { error, call in
             if error != nil {
                 self.setStatusLabelText(error?.localizedDescription)
                 return
