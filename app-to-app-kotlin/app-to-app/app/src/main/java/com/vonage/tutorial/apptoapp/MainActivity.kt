@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("MissingPermission")
     fun startCall() {
-        client.call(otherUser, NexmoCallHandler.SERVER, object : NexmoRequestListener<NexmoCall> {
+        client.serverCall(otherUser, null, object : NexmoRequestListener<NexmoCall> {
             override fun onSuccess(call: NexmoCall?) {
                 runOnUiThread {
                     hideUI()

@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("MissingPermission")
     fun startCall() {
-        client.call("PHONE_NUMBER", NexmoCallHandler.SERVER, object : NexmoRequestListener<NexmoCall> {
+        client.serverCall("PHONE_NUMBER", null, object : NexmoRequestListener<NexmoCall> {
             override fun onSuccess(call: NexmoCall?) {
                 runOnUiThread {
                     endCallButton.visibility = View.VISIBLE
