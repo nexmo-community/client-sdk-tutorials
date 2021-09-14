@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("MissingPermission")
     private void startCall() {
-        client.call("PHONE_NUMBER", NexmoCallHandler.SERVER, new NexmoRequestListener<NexmoCall>() {
+        client.serverCall("PHONE_NUMBER", null, new NexmoRequestListener<NexmoCall>() {
             @Override
             public void onError(@NonNull NexmoApiError nexmoApiError) {
 
