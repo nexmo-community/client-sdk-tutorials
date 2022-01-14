@@ -1,5 +1,7 @@
 PODS:
-  - NexmoClient (3.1.0)
+  - NexmoClient (4.0.4):
+    - VonageWebRTC (= 84.0.6)
+  - VonageWebRTC (84.0.6)
 
 DEPENDENCIES:
   - NexmoClient
@@ -7,10 +9,12 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - NexmoClient
+    - VonageWebRTC
 
 SPEC CHECKSUMS:
-  NexmoClient: c2e1f310d93db4e0c3dddbee0230a968fd707bc8
+  NexmoClient: d460f41a6cda79e0ab939d36421ee9fcb59bc105
+  VonageWebRTC: 43c98daaa1922c6a22b145779dba8efbf7ea431e
 
 PODFILE CHECKSUM: b898b66fd45ab2b93bdf26a039328e87ebbb965c
 
-COCOAPODS: 1.10.2
+COCOAPODS: 1.11.2

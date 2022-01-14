@@ -110,7 +110,7 @@ class ChatViewController: UIViewController {
                 if let memberEvent = event as? NXMMemberEvent {
                     self.showMemberEvent(event: memberEvent)
                 }
-                if let textEvent = event as? NXMTextEvent {
+                if let textEvent = event as? NXMMessageEvent {
                     self.showTextEvent(event: textEvent)
                 }
             }
@@ -120,11 +120,11 @@ class ChatViewController: UIViewController {
     func showMemberEvent(event: NXMMemberEvent) {
         switch event.state {
         case .invited:
-            addConversationLine("\(event.member.user.name) was invited.")
+            addConversationLine("\(event.embeddedInfo?.user.name ?? "") was invited.")
         case .joined:
-            addConversationLine("\(event.member.user.name) joined.")
+            addConversationLine("\(event.embeddedInfo?.user.name ?? "") joined.")
         case .left:
-            addConversationLine("\(event.member.user.name) left.")
+            addConversationLine("\(event.embeddedInfo?.user.name ?? "") left.")
         case .unknown:
             fatalError("Unknown member event state.")
         @unknown default:
@@ -132,7 +132,7 @@ class ChatViewController: UIViewController {
         }
     }
     
-    func showTextEvent(event: NXMTextEvent) {
+    func showTextEvent(event: NXMMessageEvent) {
         if let message = event.text {
             addConversationLine("\(event.embeddedInfo?.user.name ?? "A user") said: '\(message)'")
         }
@@ -149,7 +149,7 @@ class ChatViewController: UIViewController {
     
     func send(message: String) {
         inputField.isEnabled = false
-        conversation?.sendText(message, completionHandler: { [weak self] (error) in
+        conversation?.sendMessage(NXMMessage(text: message), completionHandler: { [weak self] (error) in
             DispatchQueue.main.async { [weak self] in
                 self?.inputField.isEnabled = true
             }
@@ -163,7 +163,7 @@ extension ChatViewController: NXMConversationDelegate {
         NSLog("Conversation error: \(error.localizedDescription)")
     }
     
-    func conversation(_ conversation: NXMConversation, didReceive event: NXMTextEvent) {
+    func conversation(_ conversation: NXMConversation, didReceive event: NXMMessageEvent) {
         self.events?.append(event)
     }
 }

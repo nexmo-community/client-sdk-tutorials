@@ -93,8 +93,8 @@
         for (NXMEvent *event in self.events) {
             if ([event isMemberOfClass:[NXMMemberEvent class]]) {
                 [self showMemberEvent:(NXMMemberEvent *)event];
-            } else if ([event isMemberOfClass:[NXMTextEvent class]]) {
-                [self showTextEvent:(NXMTextEvent *)event];
+            } else if ([event isMemberOfClass:[NXMMessageEvent class]]) {
+                [self showTextEvent:(NXMMessageEvent *)event];
             }
         }
     });
@@ -103,13 +103,13 @@
 - (void)showMemberEvent:(NXMMemberEvent *)event {
     switch (event.state) {
         case NXMMemberStateInvited:
-            [self addConversationLine:[NSString stringWithFormat:@"%@ was invited", event.member.user.name]];
+            [self addConversationLine:[NSString stringWithFormat:@"%@ was invited", event.embeddedInfo.user.name]];
             break;
         case NXMMemberStateJoined:
-            [self addConversationLine:[NSString stringWithFormat:@"%@ joined", event.member.user.name]];
+            [self addConversationLine:[NSString stringWithFormat:@"%@ joined", event.embeddedInfo.user.name]];
             break;
         case NXMMemberStateLeft:
-            [self addConversationLine:[NSString stringWithFormat:@"%@ left", event.member.user.name]];
+            [self addConversationLine:[NSString stringWithFormat:@"%@ left", event.embeddedInfo.user.name]];
             break;
         case NXMMemberStateUnknown:
             [NSException raise:@"UnknownMemberState" format:@"Member state is unknown"];
@@ -117,7 +117,7 @@
     }
 }
 
-- (void)showTextEvent:(NXMTextEvent *)event {
+- (void)showTextEvent:(NXMMessageEvent *)event {
     NSString *message = [NSString stringWithFormat:@"%@ said %@", event.embeddedInfo.user.name, event.text];
     [self addConversationLine:message];
 }
@@ -134,7 +134,7 @@
 
 - (void)sendMessage:(NSString *)message {
     [self.inputField setUserInteractionEnabled:NO];
-    [self.conversation sendText:message completionHandler:^(NSError * _Nullable error) {
+    [self.conversation sendMessage: [[NXMMessage alloc] initWithText:message] completionHandler:^(NSError * _Nullable error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.inputField setUserInteractionEnabled:YES];
         });
@@ -175,7 +175,7 @@
     return YES;
 }
 
-- (void)conversation:(NXMConversation *)conversation didReceiveTextEvent:(NXMTextEvent *)event {
+- (void)conversation:(NXMConversation *)conversation didReceiveMessageEvent:(NXMMessageEvent *)event {
     [self.events addObject:event];
     [self processEvents];
 }
