@@ -6,6 +6,7 @@ private.key
 app-to-phone-js/node_modules/*
 phone-to-app-js/node_modules/*
 app-to-app-js/node_modules/*
+in-app-messaging-js/node_modules/*
 
 app-to-phone-swift/node_modules/*
 app-to-phone-swift/AppToPhone/Pods/*
@@ -21,3 +22,6 @@ app-to-app-swift/node_modules/*
 app-to-app-swift/AppToApp/Pods/*
 app-to-app-objc/node_modules/*
 app-to-app-objc/AppToApp/Pods/*
+
+in-app-messaging-swift/Pods/*
+in-app-messaging-objc/Pods/*

@@ -13,12 +13,12 @@ app.get('/voice/answer', (req, res) => {
   console.log('---');
   res.json([ 
     { 
-      "action": "talk", 
-      "from": req.query.from,
+      "action": "talk",
       "text": "Please wait while we connect you."
     },
     { 
-      "action": "connect", 
+      "action": "connect",
+      "from": req.query.from,
       "endpoint": [ 
         { "type": "app", "user": "Alice" } 
       ]

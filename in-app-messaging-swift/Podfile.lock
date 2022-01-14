@@ -1,0 +1,16 @@
+PODS:
+  - NexmoClient (3.0.0)
+
+DEPENDENCIES:
+  - NexmoClient
+
+SPEC REPOS:
+  trunk:
+    - NexmoClient
+
+SPEC CHECKSUMS:
+  NexmoClient: 5c31d670aa820ceaee5de5212fdd9f45b71c6c18
+
+PODFILE CHECKSUM: 13c02dbeaf43d112646b160b70fd8da339b9df36
+
+COCOAPODS: 1.10.1
