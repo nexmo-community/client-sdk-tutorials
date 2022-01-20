@@ -10,20 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import com.nexmo.client.NexmoAttachmentEvent
-import com.nexmo.client.NexmoClient
-import com.nexmo.client.NexmoConversation
-import com.nexmo.client.NexmoDeletedEvent
-import com.nexmo.client.NexmoDeliveredEvent
-import com.nexmo.client.NexmoEvent
-import com.nexmo.client.NexmoEventsPage
-import com.nexmo.client.NexmoMemberEvent
-import com.nexmo.client.NexmoMemberState
-import com.nexmo.client.NexmoMessageEventListener
-import com.nexmo.client.NexmoPageOrder
-import com.nexmo.client.NexmoSeenEvent
-import com.nexmo.client.NexmoTextEvent
-import com.nexmo.client.NexmoTypingEvent
+import com.nexmo.client.*
 import com.nexmo.client.request_listener.NexmoApiError
 import com.nexmo.client.request_listener.NexmoConnectionListener
 import com.nexmo.client.request_listener.NexmoRequestListener
@@ -99,11 +86,11 @@ class MainActivity : AppCompatActivity() {
                 conversation?.let {
                     getConversationEvents(it)
                     it.addMessageEventListener(object : NexmoMessageEventListener {
-                        override fun onTextEvent(textEvent: NexmoTextEvent) {
-                            conversationEvents.add(textEvent)
+                        override fun onMessageEvent(messageEvent: NexmoMessageEvent) {
+                            conversationEvents.add(messageEvent)
                             updateConversationView()
                         }
-
+                        override fun onTextEvent(textEvent: NexmoTextEvent) {}
                         override fun onAttachmentEvent(attachmentEvent: NexmoAttachmentEvent) {}
                         override fun onEventDeleted(deletedEvent: NexmoDeletedEvent) {}
                         override fun onSeenReceipt(seenEvent: NexmoSeenEvent) {}
@@ -147,7 +134,10 @@ class MainActivity : AppCompatActivity() {
 
             when (event) {
                 is NexmoMemberEvent -> {
-                    val userName = event.embeddedInfo.user.name
+                    val userName = ""
+                    if (event.embeddedInfo != null) {
+                        val userName = event.embeddedInfo.user.name
+                    }
 
                     line = when (event.state) {
                         NexmoMemberState.JOINED -> "$userName joined"
@@ -156,8 +146,8 @@ class MainActivity : AppCompatActivity() {
                         NexmoMemberState.UNKNOWN -> "Error: Unknown member event state"
                     }
                 }
-                is NexmoTextEvent -> {
-                    line = "${event.embeddedInfo.user.name} said: ${event.text}"
+                is NexmoMessageEvent -> {
+                    line = "${event.embeddedInfo.user.name} said: ${event.message.text}"
                 }
             }
             lines.add(line)
@@ -182,7 +172,7 @@ class MainActivity : AppCompatActivity() {
         messageEditText.setText("")
         hideKeyboard()
 
-        conversation?.sendText(message, object : NexmoRequestListener<Void?> {
+        conversation?.sendMessage(NexmoMessage.fromText(message), object: NexmoRequestListener<Void?> {
             override fun onError(apiError: NexmoApiError) {
                 Toast.makeText(this@MainActivity, "Error sending message", Toast.LENGTH_SHORT).show()
             }

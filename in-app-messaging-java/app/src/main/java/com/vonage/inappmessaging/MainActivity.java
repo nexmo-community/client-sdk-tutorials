@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         messageEditText.setText("");
         hideKeyboard();
 
-        conversation.sendText(message, new NexmoRequestListener<Void>() {
+        conversation.sendMessage(NexmoMessage.fromText(message), new NexmoRequestListener<Void>() {
             @Override
             public void onError(@NonNull NexmoApiError apiError) {
                 Toast.makeText(MainActivity.this, "Error sending message", Toast.LENGTH_SHORT).show();
@@ -127,10 +127,13 @@ public class MainActivity extends AppCompatActivity {
 
                 conversation.addMessageEventListener(new NexmoMessageEventListener() {
                     @Override
-                    public void onTextEvent(@NonNull NexmoTextEvent textEvent) {
-                        conversationEvents.add(textEvent);
+                    public void onMessageEvent(@NonNull NexmoMessageEvent messageEvent) {
+                        conversationEvents.add(messageEvent);
                         updateConversationView();
                     }
+
+                    @Override
+                    public void onTextEvent(@NonNull NexmoTextEvent textEvent) { }
 
                     @Override
                     public void onAttachmentEvent(@NonNull NexmoAttachmentEvent attachmentEvent) {}
@@ -204,7 +207,10 @@ public class MainActivity extends AppCompatActivity {
 
             if (event instanceof NexmoMemberEvent) {
                 NexmoMemberEvent memberEvent = (NexmoMemberEvent) event;
-                String userName = memberEvent.getEmbeddedInfo().getUser().getName();
+                String userName = "";
+                if (memberEvent.getEmbeddedInfo() != null ) {
+                    userName = memberEvent.getEmbeddedInfo().getUser().getName();
+                }
 
                 switch (memberEvent.getState()) {
                     case JOINED:
@@ -220,10 +226,10 @@ public class MainActivity extends AppCompatActivity {
                         line = "Error: Unknown member event state";
                         break;
                 }
-            } else if (event instanceof NexmoTextEvent) {
-                NexmoTextEvent textEvent = (NexmoTextEvent) event;
-                String userName = textEvent.getEmbeddedInfo().getUser().getName();
-                line = userName + " said: " + textEvent.getText();
+            } else if (event instanceof NexmoMessageEvent) {
+                NexmoMessageEvent messageEvent = (NexmoMessageEvent) event;
+                String userName = messageEvent.getEmbeddedInfo().getUser().getName();
+                line = userName + " said: " + messageEvent.getMessage().getText();
             }  else if (event instanceof NexmoMediaEvent) {
                 NexmoMediaEvent nexmoMediaEvent = (NexmoMediaEvent) event;
                 String userName = nexmoMediaEvent.getEmbeddedInfo().getUser().getName();
