@@ -90,6 +90,8 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [self displayIncomingCallAlert:call];
     });
+    [call setDelegate:self];
+    self.call = call;
 }
 
 - (void)displayIncomingCallAlert:(NXMCall *)call {
