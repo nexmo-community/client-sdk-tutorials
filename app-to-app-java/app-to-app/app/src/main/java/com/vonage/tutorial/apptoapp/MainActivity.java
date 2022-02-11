@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private Button answerCallButton;
     private Button rejectCallButton;
     private Button endCallButton;
+    private NexmoCallEventListener callListener;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,6 +89,28 @@ public class MainActivity extends AppCompatActivity {
             });
         });
 
+        callListener = new NexmoCallEventListener() {
+            @Override
+            public void onMemberStatusUpdated(NexmoCallMemberStatus callStatus, NexmoMember NexmoMember) {
+                if (callStatus == NexmoCallMemberStatus.COMPLETED || callStatus == NexmoCallMemberStatus.CANCELLED) {
+                    onGoingCall = null;
+
+                    runOnUiThread(() -> {
+                        hideUI();
+                        waitingForIncomingCallTextView.setVisibility(View.VISIBLE);
+                        startCallButton.setVisibility(View.VISIBLE);
+                    });
+                }
+            }
+
+            @Override
+            public void onMuteChanged(NexmoMediaActionState newState, NexmoMember member) {}
+            @Override
+            public void onEarmuffChanged(NexmoMediaActionState newState, NexmoMember member) {}
+            @Override
+            public void onDTMF(String dtmf, NexmoMember member) {}
+        };
+
     }
 
     private void hideUI() {
@@ -124,40 +147,11 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     hideUI();
                     endCallButton.setVisibility(View.VISIBLE);
-                    waitingForIncomingCallTextView.setVisibility(View.VISIBLE);
+                    waitingForIncomingCallTextView.setVisibility(View.INVISIBLE);
                 });
 
                 onGoingCall = call;
-
-                onGoingCall.addCallEventListener(new NexmoCallEventListener() {
-                    @Override
-                    public void onMemberStatusUpdated(NexmoCallMemberStatus callStatus, NexmoMember NexmoMember) {
-                        if (callStatus == NexmoCallMemberStatus.COMPLETED || callStatus == NexmoCallMemberStatus.CANCELLED) {
-                            onGoingCall = null;
-
-                            runOnUiThread(() -> {
-                                    hideUI();
-                                    startCallButton.setVisibility(View.VISIBLE);
-                                }
-                            );
-                        }
-                    }
-
-                    @Override
-                    public void onMuteChanged(NexmoMediaActionState nexmoMediaActionState, NexmoMember NexmoMember) {
-
-                    }
-
-                    @Override
-                    public void onEarmuffChanged(NexmoMediaActionState nexmoMediaActionState, NexmoMember NexmoMember) {
-
-                    }
-
-                    @Override
-                    public void onDTMF(String s, NexmoMember NexmoMember) {
-
-                    }
-                });
+                onGoingCall.addCallEventListener(callListener);
             }
         });
     }
@@ -172,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(@Nullable NexmoCall nexmoCall) {
+                onGoingCall.addCallEventListener(callListener);
                 runOnUiThread(() -> {
                     hideUI();
                     endCallButton.setVisibility(View.VISIBLE);

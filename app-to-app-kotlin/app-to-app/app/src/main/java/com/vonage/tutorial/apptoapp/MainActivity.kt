@@ -27,7 +27,6 @@ class MainActivity : AppCompatActivity() {
     private var otherUser: String = ""
     private var onGoingCall: NexmoCall? = null
 
-
     private lateinit var connectionStatusTextView: TextView
     private lateinit var waitingForIncomingCallTextView: TextView
     private lateinit var loginAsAlice: Button
@@ -36,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var answerCallButton: Button
     private lateinit var rejectCallButton: Button
     private lateinit var endCallButton: Button
+    private lateinit var callListener: NexmoCallEventListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +81,6 @@ class MainActivity : AppCompatActivity() {
 
         client.addIncomingCallListener { it ->
             onGoingCall = it
-
             runOnUiThread {
                 hideUI()
                 answerCallButton.visibility = View.VISIBLE
@@ -89,6 +88,23 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        callListener = object: NexmoCallEventListener {
+            override fun onMemberStatusUpdated(callStatus: NexmoCallMemberStatus, callMember: NexmoMember) {
+                if (callStatus == NexmoCallMemberStatus.COMPLETED || callStatus == NexmoCallMemberStatus.CANCELLED) {
+                    onGoingCall = null
+
+                    runOnUiThread {
+                        hideUI()
+                        startCallButton.visibility = View.VISIBLE
+                        waitingForIncomingCallTextView.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+            override fun onMuteChanged(nexmoMediaActionState: NexmoMediaActionState, callMember: NexmoMember) {}
+            override fun onEarmuffChanged(nexmoMediaActionState: NexmoMediaActionState, callMember: NexmoMember) {}
+            override fun onDTMF(dtmf: String, callMember: NexmoMember) {}
+        }
     }
 
     private fun hideUI() {
@@ -117,25 +133,7 @@ class MainActivity : AppCompatActivity() {
 
                 onGoingCall = call
 
-                onGoingCall?.addCallEventListener(object : NexmoCallEventListener {
-                    override fun onMemberStatusUpdated(callStatus: NexmoCallMemberStatus, callMember: NexmoMember) {
-                        if (callStatus == NexmoCallMemberStatus.COMPLETED || callStatus == NexmoCallMemberStatus.CANCELLED) {
-                            onGoingCall = null
-
-                            runOnUiThread {
-                                hideUI()
-                                startCallButton.visibility = View.VISIBLE
-                                waitingForIncomingCallTextView.visibility = View.VISIBLE
-                            }
-                        }
-                    }
-
-                    override fun onMuteChanged(nexmoMediaActionState: NexmoMediaActionState, callMember: NexmoMember) {}
-
-                    override fun onEarmuffChanged(nexmoMediaActionState: NexmoMediaActionState, callMember: NexmoMember) {}
-
-                    override fun onDTMF(dtmf: String, callMember: NexmoMember) {}
-                })
+                onGoingCall?.addCallEventListener(callListener)
             }
 
             override fun onError(apiError: NexmoApiError) {
@@ -151,6 +149,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSuccess(p0: NexmoCall?) {
+                onGoingCall?.addCallEventListener(callListener)
                 runOnUiThread {
                     hideUI()
                     endCallButton.visibility = View.VISIBLE
