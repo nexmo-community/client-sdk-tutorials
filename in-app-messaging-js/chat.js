@@ -52,21 +52,25 @@ async function run(userToken) {
   document.getElementById("sessionName").textContent = conversation.me.user.name + "'s messages";
 
   // Load events that happened before the page loaded
-  let initialEvents = await conversation.getEvents({ event_type: "text", page_size: 10, order:"desc" });
+  let initialEvents = await conversation.getEvents({ event_type: "message", page_size: 10, order:"desc" });
 
   listMessages(initialEvents);
 
-  // Any time there's a new text event, add it as a message
-  conversation.on('text', (sender, event) => {
+  // Any time there's a new message event, add it as a message
+  conversation.on('message', (sender, event) => {
     const formattedMessage = formatMessage(sender, event, conversation.me);
     messageFeed.innerHTML = messageFeed.innerHTML +  formattedMessage;
     messagesCountSpan.textContent = messagesCount;
   });
 
   // Listen for clicks on the submit button and send the existing text value
-  sendButton.addEventListener("click", async () => {
-    await conversation.sendText(messageTextarea.value);
-    messageTextarea.value = '';
+  sendButton.addEventListener("click", () => {
+    conversation.sendMessage({ "message_type": "text", "text": messageTextarea.value }).then((event) => {
+      console.log("message was sent", event);
+      messageTextarea.value = '';
+    }).catch((error)=>{
+      console.error("error sending the message ", error);
+    });
   });
 
   // Listen for key presses and send start typing event
