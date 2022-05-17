@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   runApp(const MyApp());
+}
+
+class VonageConfig {
+
+  static String ALICE_JWT = "";
+  static String BOB_JWT = "";
+
 }
 
 class MyApp extends StatelessWidget {
@@ -11,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'App To App Voice Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -24,7 +32,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'App to App Voice Demo'),
     );
   }
 }
