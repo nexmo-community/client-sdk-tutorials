@@ -1,13 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Flutter Demo',
       home: CallWidget(title: 'app-to-phone-flutter'),
     );
@@ -15,7 +18,7 @@ class MyApp extends StatelessWidget {
 }
 
 class CallWidget extends StatefulWidget {
-  CallWidget({Key key, this.title}) : super(key: key);
+  const CallWidget({Key key = const Key("any_key"), required this.title}) : super(key: key);
   final String title;
 
   @override
@@ -25,6 +28,66 @@ class CallWidget extends StatefulWidget {
 class _CallWidgetState extends State<CallWidget> {
   SdkState _sdkState = SdkState.LOGGED_OUT;
   static const platformMethodChannel = MethodChannel('com.vonage');
+
+  _CallWidgetState() {
+    platformMethodChannel.setMethodCallHandler(methodCallHandler);
+  }
+
+  Future<dynamic> methodCallHandler(MethodCall methodCall) async {
+    switch (methodCall.method) {
+      case 'updateState':
+        {
+          setState(() {
+            var arguments = 'SdkState.${methodCall.arguments}';
+            _sdkState = SdkState.values.firstWhere((v) {return v.toString() == arguments;}
+            );
+          });
+        }
+        break;
+      default:
+        throw MissingPluginException('notImplemented');
+    }
+  }
+
+  Future<void> _loginUser() async {
+    String token = "ALICE_TOKEN";
+
+    try {
+      await platformMethodChannel
+          .invokeMethod('loginUser', <String, dynamic>{'token': token});
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
+  Future<void> _makeCall() async {
+    try {
+      await requestPermissions();
+
+      await platformMethodChannel.invokeMethod('makeCall');
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
+  Future<void> requestPermissions() async {
+    await [ Permission.microphone] .request();
+  }
+
+  Future<void> _endCall() async {
+    try {
+      await platformMethodChannel.invokeMethod('endCall');
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +98,7 @@ class _CallWidgetState extends State<CallWidget> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(height: 64),
+            const SizedBox(height: 64),
             _updateView()
           ],
         ),
@@ -47,28 +110,27 @@ class _CallWidgetState extends State<CallWidget> {
     if (_sdkState == SdkState.LOGGED_OUT) {
       return ElevatedButton(
           onPressed: () { _loginUser(); },
-          child: Text("LOGIN AS ALICE")
+          child: const Text("LOGIN AS ALICE")
+      );
+    } else if (_sdkState == SdkState.WAIT) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    } else if (_sdkState == SdkState.LOGGED_IN) {
+      return ElevatedButton(
+          onPressed: () { _makeCall(); },
+          child: const Text("MAKE PHONE CALL")
+      );
+    } else if (_sdkState == SdkState.ON_CALL) {
+      return ElevatedButton(
+          onPressed: () { _endCall(); },
+          child: const Text("END CALL")
+      );
+    } else {
+      return const Center(
+          child: Text("ERROR")
       );
     }
-  }
-
-
-  Future<void> _loginUser() async {
-    String token = "ALICE_TOKEN";
-
-    try {
-      await platformMethodChannel.invokeMethod('loginUser', <String, dynamic>{'token': token});
-    } on PlatformException catch (e) {
-      print(e);
-    }
-  }
-
-  Future<void> _makeCall() async {
-    // Make call
-  }
-
-  Future<void> _endCall() async {
-    // End call
   }
 }
 
