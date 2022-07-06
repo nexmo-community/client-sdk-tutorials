@@ -14,7 +14,7 @@
       const btnCall = document.getElementById("btn-call");
       const btnHangUp = document.getElementById("btn-hangup");
       new NexmoClient({ debug: true })
-        .login(aliceJWT)
+        .createSession(aliceJWT)
         .then(app => {
           btnCall.addEventListener("click", () => {
             console.log("Calling Bob...");
