@@ -13,7 +13,7 @@
       const bobJWT ="PASTE BOB JWT HERE";
 
       new NexmoClient({ debug: true })
-        .login(bobJWT)
+        .createSession(bobJWT)
         .then(app => {
           let btn = document.getElementById("button");
           let notification = document.getElementById("notification");
