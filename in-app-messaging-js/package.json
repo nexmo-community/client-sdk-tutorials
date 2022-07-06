@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "nexmo-client": "^8.0.4"
+    "nexmo-client": "^9.0.0"
   }
 }
