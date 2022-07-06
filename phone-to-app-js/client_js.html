@@ -14,7 +14,7 @@
   <script>
 
     new NexmoClient({ debug: true })
-    .login("PASTE ALICE JWT HERE")
+    .createSession("PASTE ALICE JWT HERE")
     .then(app => {
 
         const answerBtn = document.getElementById("answer");
