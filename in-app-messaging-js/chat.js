@@ -45,7 +45,7 @@ loadMessagesButton.addEventListener("click", async (event) => {
 
 async function run(userToken) {
   let client = new NexmoClient({ debug: true });
-  let app = await client.login(userToken);
+  let app = await client.createSession(userToken);
   conversation = await app.getConversation(CONVERSATION_ID);
 
   // Update the UI to show which user we are
