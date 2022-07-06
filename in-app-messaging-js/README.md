@@ -4,53 +4,54 @@ This is the sample code for the In-App messaging use case on [Nexmo Developer](h
 
 ## Initial Setup
 
-### Install the CLI Beta
-
+### Install the Vonage CLI
 ```
-$ npm install -g nexmo-cli@beta
-$ nexmo setup api_key api_secret
+$ npm install -g @vonage/cli
+$ vonage config:set --apiKey=API_KEY --apiSecret=API_SECRET
 ```
 
-### Create Nexmo Application
+### Install the Vonage CLI Conversations Plugin
+```
+$ vonage plugins:install @vonage/cli-plugin-conversations
+```
+
+### Create Vonage Application
 
 Run this command in the project directory:
 ```
-$ nexmo app:create "My Messaging App" https://example.com/answer https://example.com/event --type rtc --keyfile private.key
-Application created: APPLICATION_ID
-Credentials written to ./.nexmo-app
-Private Key saved to: private.key
+$ vonage apps:create
 ```
 
 ## Create the Conversation and Users
 
 ### Create Conversation
 ```
-$ nexmo conversation:create display_name="Messaging Demo"
+$ vonage apps:conversations:create "CONVERSATION_NAME"
 Conversation created: CONVERSATION_ID
 ```
 
 ### Create Two Users 
 ```
-$ nexmo user:create name="USER1"
+$ vonage apps:users:create USER1_NAME
 User created: USER1_USER_ID
 
-$ nexmo user:create name="USER2"
+$ vonage apps:users:create USER2_NAME
 User created: USER2_USER_ID
 ```
 
 ### Add Users to the Conversation’s Members
 ```
-$ nexmo member:add CONVERSATION_ID action=join channel='{"type":"app"}' user_id=USER1_USER_ID
+$ vonage apps:conversations:members:add CONVERSATION_ID USER1_USER_ID
 Member added: USER1_MEMBER_ID
 
-$ nexmo member:add CONVERSATION_ID action=join channel='{"type":"app"}' user_id=USER2_MEMBER_ID
+$ vonage apps:conversations:members:add CONVERSATION_ID USER2_USER_ID
 Member added: USER2_MEMBER_ID
 ```
 
 List the members:
 
 ```
-$ nexmo member:list CONVERSATION_ID -v
+$ vonage apps:conversations:members CONVERSATION_ID
 name    | user_id               | user_name | state 
 -----------------------------------------------------------------------
 USER1    | USER1_USER_ID          | user1      | JOINED
@@ -58,16 +59,14 @@ USER2 | USER2_USER_ID       | user2   | JOINED
 ```
 
 ### Generate User JWTs
-You need to use `APPLICATION_ID` and the actual name of the user
+You need to use `APP_ID` and the actual name of the user
 ```sh
-$ USER1_JWT="$(nexmo jwt:generate ./private.key sub=user1 exp=$(($(date +%s)+86400)) acl='{"paths":{"/v1/users/**":{},"/v1/conversations/**":{},"/v1/sessions/**":{},"/v1/devices/**":{},"/v1/image/**":{},"/v3/media/**":{},"/v1/applications/**":{},"/v1/push/**":{},"/v1/knocking/**":{}}}' application_id=APPLICATION_ID)"
+$ vonage jwt --key_file=./private.key --acl='{"paths":{"/*/users/**":{},"/*/conversations/**":{},"/*/sessions/**":{},"/*/devices/**":{},"/*/image/**":{},"/*/media/**":{},"/*/applications/**":{},"/*/push/**":{},"/*/knocking/**":{},"/*/legs/**":{}}}' --subject=USER1_NAME --app_id=APP_ID
 
-$ echo $USER1_JWT
 eyJhbGciOiJSUzI1NiIsInR5cCI...
 
-$ USER2_JWT="$(nexmo jwt:generate ./private.key sub=user2 exp=$(($(date +%s)+86400)) acl='{"paths":{"/v1/users/**":{},"/v1/conversations/**":{},"/v1/sessions/**":{},"/v1/devices/**":{},"/v1/image/**":{},"/v3/media/**":{},"/v1/applications/**":{},"/v1/push/**":{},"/v1/knocking/**":{}}}' application_id=APPLICATION_ID)"
+$ vonage jwt --key_file=./private.key --acl='{"paths":{"/*/users/**":{},"/*/conversations/**":{},"/*/sessions/**":{},"/*/devices/**":{},"/*/image/**":{},"/*/media/**":{},"/*/applications/**":{},"/*/push/**":{},"/*/knocking/**":{},"/*/legs/**":{}}}' --subject=USER2_NAME --app_id=APP_ID
 
-$ echo $USER2_JWT
 eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
