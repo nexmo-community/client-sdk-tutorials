@@ -6,6 +6,6 @@ target 'AppToPhone' do
   use_frameworks!
 
   # Pods for AppToPhone
-  pod 'NexmoClient'
+  pod 'VonageClientSDKVoice', '0.1.3-alpha.19'
 
 end

@@ -1,15 +1,18 @@
 'use strict';
 
-const subdomain = 'SUBDOMAIN';
 const vonageNumber = 'NUMBER';
+const port = 3000;
 
 const express = require('express')
 const app = express();
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/voice/answer', (req, res) => {
   console.log('NCCO request:');
-  console.log(`  - callee: ${req.query.to}`);
+  const callee = JSON.parse(req.query.custom_data).number
+  console.log(`  - callee: ${callee}`);
   console.log('---');
   res.json([ 
     { 
@@ -20,7 +23,7 @@ app.get('/voice/answer', (req, res) => {
       "action": "connect",
       "from": vonageNumber,
       "endpoint": [ 
-        { "type": "phone", "number": req.query.to } 
+        { "type": "phone", "number": callee } 
       ]
     }
   ]);
@@ -33,21 +36,11 @@ app.all('/voice/event', (req, res) => {
   res.sendStatus(200);
 });
 
-if(subdomain == "SUBDOMAIN") {
-  console.log('\n\t🚨🚨🚨 Please change the SUBDOMAIN value');
-  return false;
-}
 if(vonageNumber == "NUMBER") {
   console.log('\n\t🚨🚨🚨 Please change the NUMBER value');
   return false;
 }
-app.listen(3000);
 
-const localtunnel = require('localtunnel');
-(async () => {
-  const tunnel = await localtunnel({ 
-      subdomain: subdomain, 
-      port: 3000
-    });
-  console.log(`App available at: ${tunnel.url}`);
-})();
+app.listen(port, () => {
+  console.log(`Listening on port ${port}`)
+});
