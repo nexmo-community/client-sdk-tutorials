@@ -5,7 +5,7 @@ class ViewController: UIViewController {
     
     var connectionStatusLabel = UILabel()
     var callButton = UIButton(type: .roundedRect)
-    var client = VGVoiceClient()
+    let client = VGVoiceClient()
     var call: VGVoiceCall?
     
     override func viewDidLoad() {
