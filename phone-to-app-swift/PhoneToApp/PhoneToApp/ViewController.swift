@@ -1,73 +1,88 @@
 import UIKit
-import NexmoClient
+import VonageClientSDKVoice
 
 class ViewController: UIViewController {
     
     let connectionStatusLabel = UILabel()
-    let client = NXMClient.shared
-    var call: NXMCall?
+    let client = VGVoiceClient()
+    var call: VGVoiceCall?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        connectionStatusLabel.text = "Unknown"
+        connectionStatusLabel.text = "Disconnected"
         connectionStatusLabel.textAlignment = .center
         connectionStatusLabel.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(connectionStatusLabel)
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[label]-20-|",
-                                                           options: [], metrics: nil, views: ["label" : connectionStatusLabel]))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-80-[label(20)]",
-                                                           options: [], metrics: nil, views: ["label" : connectionStatusLabel]))
         
-        client.setDelegate(self)
-        client.login(withAuthToken: "ALICE_JWT")
+        NSLayoutConstraint.activate([
+            connectionStatusLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            connectionStatusLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        
+        let config = VGClientConfig(region: .US)
+        client.setConfig(config)
+        client.delegate = self
+        
+        client.createSession("ALICE_JWT", sessionId: nil) { error, sessionId in
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                if error == nil {
+                    self.connectionStatusLabel.text = "Connected"
+                } else {
+                    self.connectionStatusLabel.text = error?.localizedDescription
+                }
+            }
+        }
     }
     
-    func displayIncomingCallAlert(call: NXMCall) {
-        let from = call.myMember?.channel?.from.data ?? "Unknown"
+    func displayIncomingCallAlert(callInvite: VGVoiceInvite) {
+        // TODO: No caller info
+        let from = "Unknown"
         
         let alert = UIAlertController(title: "Incoming call from", message: from, preferredStyle: .alert)
+        
         alert.addAction(UIAlertAction(title: "Answer", style: .default, handler: { _ in
-            self.call = call
-            call.answer(nil)
-            
+            callInvite.answer { error, call in
+                if error == nil {
+                    self.call = call
+                }
+            }
         }))
+        
         alert.addAction(UIAlertAction(title: "Reject", style: .default, handler: { _ in
-            call.reject(nil)
+            callInvite.reject { error in
+                if let error {
+                    self.connectionStatusLabel.text = error.localizedDescription
+                }
+            }
         }))
         
         self.present(alert, animated: true, completion: nil)
     }
 }
 
-extension ViewController: NXMClientDelegate {
+extension ViewController: VGVoiceClientDelegate {
     
-    func client(_ client: NXMClient, didChange status: NXMConnectionStatus, reason: NXMConnectionStatusReason) {
+    func voiceClient(_ client: VGVoiceClient, didReceive invite: VGVoiceInvite) {
         DispatchQueue.main.async { [weak self] in
-            switch status {
-            case .connected:
-                self?.connectionStatusLabel.text = "Connected"
-            case .disconnected:
-                self?.connectionStatusLabel.text = "Disconnected"
-            case .connecting:
-                self?.connectionStatusLabel.text = "Connecting"
-            @unknown default:
-                self?.connectionStatusLabel.text = "Unknown"
-            }
+            self?.displayIncomingCallAlert(callInvite: invite)
         }
     }
     
-    func client(_ client: NXMClient, didReceiveError error: Error) {
+    func client(_ client: VGBaseClient, didReceiveSessionErrorWithReason reason: String) {
         DispatchQueue.main.async { [weak self] in
-            self?.connectionStatusLabel.text = error.localizedDescription
+            self?.connectionStatusLabel.text = reason
         }
     }
     
-    func client(_ client: NXMClient, didReceive call: NXMCall) {
-        DispatchQueue.main.async { [weak self] in
-            self?.displayIncomingCallAlert(call: call)
-        }
-    }
+    // TODO: Some (if not most) of these should be optional!
+    func clientWillReconnect(_ client: VGBaseClient) {}
+    func clientDidReconnect(_ client: VGBaseClient) {}
+    func voiceClient(_ client: VGVoiceClient, didReceiveCallTransferFor call: VGVoiceCall, withNewConversation newConversation: VGConversation, andPrevConversation prevConversation: VGConversation) {}
+    func voiceClient(_ client: VGVoiceClient, didReceiveMuteFor call: VGVoiceCall, withLegId legId: String, andStatus isMuted: Bool) {}
+    func voiceClient(_ client: VGVoiceClient, didReceiveEarmuffFor call: VGVoiceCall, withLegId legId: String, andStatus earmuffStatus: Bool) {}
+    func voiceClient(_ client: VGVoiceClient, didReceiveDTMFFor call: VGVoiceCall, withLegId legId: String, andDigits digits: String) {}
 }
