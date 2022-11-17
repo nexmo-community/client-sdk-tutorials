@@ -3,15 +3,14 @@
 const vonageNumber = 'NUMBER';
 const port = 3000;
 
-const express = require('express')
+const express = require('express');
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 app.get('/voice/answer', (req, res) => {
   console.log('NCCO request:');
-  const callee = JSON.parse(req.query.custom_data).number
+  const callee = JSON.parse(req.query.custom_data).callee
   console.log(`  - callee: ${callee}`);
   console.log('---');
   res.json([ 
