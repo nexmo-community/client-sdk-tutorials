@@ -1,13 +1,13 @@
 #import "ViewController.h"
 #import "User.h"
-#import <NexmoClient/NexmoClient.h>
+#import <VonageClientSDKVoice/VonageClientSDKVoice.h>
 #import "CallViewController.h"
 
-@interface ViewController () <NXMClientDelegate>
+@interface ViewController ()
 @property UIButton *loginAliceButton;
 @property UIButton *loginBobButton;
 @property UILabel *statusLabel;
-@property NXMClient *client;
+@property VGVoiceClient *client;
 @property User *user;
 @end
 
@@ -55,9 +55,17 @@
 }
 
 - (void)login {
-    self.client = NXMClient.shared;
-    [self.client setDelegate:self];
-    [self.client loginWithAuthToken:self.user.jwt];
+    VGClientConfig *config = [[VGClientConfig alloc] initWithRegion:VGConfigRegionUS];
+    self.client = [[VGVoiceClient alloc] init];
+    [self.client setConfig:config];
+    [self.client createSession:self.user.jwt sessionId:nil callback:^(NSError * _Nullable, NSString * _Nullable) {
+        // TODO: callback params not named
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[CallViewController alloc] initWithUser:self.user client:self.client]];
+            navigationController.modalPresentationStyle = UIModalPresentationOverFullScreen;
+            [self presentViewController:navigationController animated:YES completion:nil];
+        });
+    }];
 }
 
 - (void)setUserAsAlice {
@@ -68,36 +76,6 @@
 - (void)setUserAsBob {
     self.user = User.Bob;
     [self login];
-}
-
-- (void)client:(NXMClient *)client didChangeConnectionStatus:(NXMConnectionStatus)status reason:(NXMConnectionStatusReason)reason {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        switch (status) {
-            case NXMConnectionStatusConnected: {
-                self.statusLabel.text = @"Connected";
-                UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[CallViewController alloc] initWithUser:self.user]];
-                navigationController.modalPresentationStyle = UIModalPresentationOverFullScreen;
-                [self presentViewController:navigationController animated:YES completion:nil];
-                break;
-            }
-            case NXMConnectionStatusConnecting:
-                self.statusLabel.text = @"Connecting";
-                break;
-            case NXMConnectionStatusDisconnected:
-                self.statusLabel.text = @"Disconnected";
-                break;
-        }
-    });
-}
-
-- (void)client:(NXMClient *)client didReceiveError:(NSError *)error {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.statusLabel.text = error.localizedDescription;
-    });
-}
-
-- (void)client:(NXMClient *)client didReceiveCall:(NXMCall *)call {
-    [NSNotificationCenter.defaultCenter postNotificationName:@"NXMClient.incomingCall" object:call];
 }
 
 @end

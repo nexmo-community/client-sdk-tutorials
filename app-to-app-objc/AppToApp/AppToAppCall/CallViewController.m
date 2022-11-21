@@ -1,23 +1,23 @@
 #import "User.h"
 #import "CallViewController.h"
-#import <NexmoClient/NexmoClient.h>
+#import <VonageClientSDKVoice/VonageClientSDKVoice.h>
 
-@interface CallViewController () <NXMCallDelegate>
+@interface CallViewController () <VGVoiceClientDelegate, VGCallDelegate>
 @property UIButton *callButton;
 @property UIButton *hangUpButton;
 @property UILabel *statusLabel;
 @property User *user;
-@property NXMClient *client;
-@property (nullable) NXMCall *call;
+@property VGVoiceClient *client;
+@property (nullable) VGVoiceCall *call;
 @end
 
 @implementation CallViewController
 
-- (instancetype)initWithUser:(User *)user {
+- (instancetype)initWithUser:(User *)user client:(VGVoiceClient *)client {
     if (self = [super init])
     {
         _user = user;
-        _client = NXMClient.shared;
+        _client = client;
     }
     return self;
 }
@@ -29,12 +29,15 @@
     
     self.callButton = [UIButton buttonWithType:UIButtonTypeSystem];
     self.callButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.callButton setTitle:[NSString stringWithFormat:@"Call %@", self.user.callPartnerName] forState:UIControlStateNormal];
+    [self.callButton addTarget:self action:@selector(makeCall) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.callButton];
     
     self.hangUpButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [self.hangUpButton setTitle:@"Hang up" forState:UIControlStateNormal];
     self.hangUpButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.hangUpButton setTitle:@"Hang up" forState:UIControlStateNormal];
     [self setHangUpButtonHidden:YES];
+    [self.hangUpButton addTarget:self action:@selector(endCall) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.hangUpButton];
     
     self.statusLabel = [[UILabel alloc] init];
@@ -61,63 +64,68 @@
     ]];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStyleDone target:self action:@selector(logout)];
-    [self.callButton setTitle:[NSString stringWithFormat:@"Call %@", self.user.callPartnerName] forState:UIControlStateNormal];
     
+    self.client.delegate = self;
     
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didReceiveCall:) name:@"NXMClient.incomingCall" object:nil];
-    
-    [self.hangUpButton addTarget:self action:@selector(endCall) forControlEvents:UIControlEventTouchUpInside];
-    [self.callButton addTarget:self action:@selector(makeCall) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)makeCall {
     [self setStatusLabelText:[NSString stringWithFormat:@"Calling %@", self.user.callPartnerName]];
     
-    [self.client serverCallWithCallee:self.user.callPartnerName customData:nil completionHandler:^(NSError * _Nullable error, NXMCall * _Nullable call) {
-        if (error) {
+    [self.client serverCall:@{@"callee": self.user.callPartnerName} callback:^(NSError * _Nullable error, VGVoiceCall * _Nullable call) {
+        if (error == nil) {
+            [self setHangUpButtonHidden:NO];
+            self.call = call;
+            self.call.delegate = self;
+        } else {
             [self setStatusLabelText:error.localizedDescription];
-            return;
         }
-        
-        [call setDelegate:self];
-        [self setHangUpButtonHidden:NO];
-        self.call = call;
     }];
 }
 
-- (void)didReceiveCall:(NSNotification *)notification {
-    NXMCall *call = (NXMCall *)notification.object;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self displayIncomingCallAlert:call];
-    });
-}
-
-- (void)displayIncomingCallAlert:(NXMCall *)call {
-    NSString *from = call.myMember.channel.from.data;
+- (void)displayIncomingCallAlert:(VGVoiceInvite *)invite {
+    // TODO: No caller info
+    NSString *from = @"Unknown";
     
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Incoming call from" message:from preferredStyle:UIAlertControllerStyleAlert];
+    
     [alert addAction:[UIAlertAction actionWithTitle:@"Answer" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        self.call = call;
-        [self.call setDelegate:self];
-        [self setHangUpButtonHidden:NO];
-        [self setStatusLabelText:[NSString stringWithFormat:@"On a call with %@", from]];
-        [call answer:nil];
+        [invite answer:^(NSError * _Nullable, VGVoiceCall * _Nullable) {
+//            if (error == nil) {
+                [self setHangUpButtonHidden:NO];
+                [self setStatusLabelText:[NSString stringWithFormat:@"On a call with %@", from]];
+//                self.call = call;
+                self.call.delegate = self;
+//            } else {
+//                [self setStatusLabelText:error.localizedDescription];
+//            }
+        }];
     }]];
+    
     [alert addAction:[UIAlertAction actionWithTitle:@"Reject" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
-        [call reject:nil];
+        [invite reject:^(NSError * _Nullable) {
+            // TODO: callback params not named
+//            if (error) {
+//                [self setStatusLabelText:error.localizedDescription];
+//            }
+        }];
     }]];
     
     [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)endCall {
-    [self.call hangup];
-    [self setHangUpButtonHidden:YES];
-    [self setStatusLabelText:@"Ready to receive call..."];
+    [self.call hangup:^(NSError * _Nullable) {
+        // TODO: callback params
+        [self setHangUpButtonHidden:YES];
+        [self setStatusLabelText:@"Ready to receive call..."];
+    }];
 }
 
 - (void)logout {
-    [self.client logout];
+    [self.client deleteSession:^(NSError * _Nullable) {
+        // TODO: Callback params
+    }];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -134,27 +142,29 @@
     });
 }
 
-- (void)call:(NXMCall *)call didUpdate:(NXMMember *)callMember withStatus:(NXMCallMemberStatus)status {
-    switch (status) {
-        case NXMCallMemberStatusAnswered:
-            if (![callMember.user.name isEqualToString:self.user.name]) {
-                [self setStatusLabelText:[NSString stringWithFormat:@"On a call with %@", callMember.user.name]];
-            }
-            break;
-        case NXMCallMemberStatusCompleted:
-            [self setStatusLabelText:@"Call ended"];
-            [self setHangUpButtonHidden:YES];
-            self.call = nil;
-            break;
-        default:
-            break;
-    }
+// TODO: legId not legid
+- (void)onCallStatusChange:(nonnull NSString *)legid status:(nonnull NSString *)status {
+    NSLog(@"%@, %@", legid, status);
 }
 
-- (void)call:(NXMCall *)call didReceive:(NSError *)error {
-    [self setStatusLabelText:error.localizedDescription];
+- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveInvite:(nonnull VGVoiceInvite *)invite {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self displayIncomingCallAlert:invite];
+    });
 }
 
-- (void)call:(NXMCall *)call didUpdate:(NXMMember *)callMember isMuted:(BOOL)muted {}
+// TODO: should be an enum
+- (void)client:(nonnull VGBaseClient *)client didReceiveSessionErrorWithReason:(nonnull NSString *)reason {
+    [self setStatusLabelText:reason];
+}
+
+// TODO: optional
+- (void)clientDidReconnect:(nonnull VGBaseClient *)client {}
+- (void)clientWillReconnect:(nonnull VGBaseClient *)client {}
+- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveCallTransferForCall:(nonnull VGVoiceCall *)call withNewConversation:(nonnull VGConversation *)newConversation andPrevConversation:(nonnull VGConversation *)prevConversation {}
+- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveDTMFForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andDigits:(nonnull NSString *)digits {}
+- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveEarmuffForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andStatus:(Boolean)earmuffStatus {}
+- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveMuteForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andStatus:(Boolean)isMuted {}
+
 
 @end
