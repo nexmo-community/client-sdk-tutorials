@@ -1,20 +1,20 @@
 PODS:
-  - NexmoClient (4.0.4):
-    - VonageWebRTC (= 84.0.6)
-  - VonageWebRTC (84.0.6)
+  - VonageClientSDKVoice (0.1.3-alpha.19):
+    - VonageWebRTC (~> 99.2.39)
+  - VonageWebRTC (99.2.39)
 
 DEPENDENCIES:
-  - NexmoClient
+  - VonageClientSDKVoice (= 0.1.3-alpha.19)
 
 SPEC REPOS:
   trunk:
-    - NexmoClient
+    - VonageClientSDKVoice
     - VonageWebRTC
 
 SPEC CHECKSUMS:
-  NexmoClient: d460f41a6cda79e0ab939d36421ee9fcb59bc105
-  VonageWebRTC: 43c98daaa1922c6a22b145779dba8efbf7ea431e
+  VonageClientSDKVoice: a8bc212aed0b1b55947e96fc0056555e7f2e18d9
+  VonageWebRTC: 4b57187170ef4ea435006e932600646a0521d6b0
 
-PODFILE CHECKSUM: 68eb16f992e8e329d2c6a233a1abc80fd12fa2a5
+PODFILE CHECKSUM: da336472ff786d12b0ca89b233fed2e9c60dc8cb
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3

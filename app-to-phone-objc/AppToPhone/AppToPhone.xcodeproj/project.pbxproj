@@ -14,7 +14,7 @@
 		1283649A24ED86AD00EF29E1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1283649924ED86AD00EF29E1 /* Assets.xcassets */; };
 		1283649D24ED86AD00EF29E1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1283649B24ED86AD00EF29E1 /* LaunchScreen.storyboard */; };
 		128364A024ED86AD00EF29E1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1283649F24ED86AD00EF29E1 /* main.m */; };
-		76E996AF3F38156A7AA75B29 /* Pods_AppToPhone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F62BD3DAC1B70F678BA842F /* Pods_AppToPhone.framework */; };
+		6CB460CB8550772A8423C03A /* Pods_AppToPhone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 439C58CCEB8AFDCA1B272F9A /* Pods_AppToPhone.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,9 +30,9 @@
 		1283649C24ED86AD00EF29E1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1283649E24ED86AD00EF29E1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1283649F24ED86AD00EF29E1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		5EB5AF41866D7C6408ECF750 /* Pods-AppToPhone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppToPhone.release.xcconfig"; path = "Target Support Files/Pods-AppToPhone/Pods-AppToPhone.release.xcconfig"; sourceTree = "<group>"; };
-		6F62BD3DAC1B70F678BA842F /* Pods_AppToPhone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AppToPhone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C17FF930A780BE0E839EDF22 /* Pods-AppToPhone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppToPhone.debug.xcconfig"; path = "Target Support Files/Pods-AppToPhone/Pods-AppToPhone.debug.xcconfig"; sourceTree = "<group>"; };
+		439C58CCEB8AFDCA1B272F9A /* Pods_AppToPhone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AppToPhone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		48B7A72DBB7257556AD4F86F /* Pods-AppToPhone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppToPhone.release.xcconfig"; path = "Target Support Files/Pods-AppToPhone/Pods-AppToPhone.release.xcconfig"; sourceTree = "<group>"; };
+		9E2413D68E224B7EBF254AFD /* Pods-AppToPhone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppToPhone.debug.xcconfig"; path = "Target Support Files/Pods-AppToPhone/Pods-AppToPhone.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,7 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				76E996AF3F38156A7AA75B29 /* Pods_AppToPhone.framework in Frameworks */,
+				6CB460CB8550772A8423C03A /* Pods_AppToPhone.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -50,8 +50,8 @@
 		0181019B8659EE60A0855DC5 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				C17FF930A780BE0E839EDF22 /* Pods-AppToPhone.debug.xcconfig */,
-				5EB5AF41866D7C6408ECF750 /* Pods-AppToPhone.release.xcconfig */,
+				9E2413D68E224B7EBF254AFD /* Pods-AppToPhone.debug.xcconfig */,
+				48B7A72DBB7257556AD4F86F /* Pods-AppToPhone.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -62,7 +62,7 @@
 				1283648C24ED86AB00EF29E1 /* AppToPhone */,
 				1283648B24ED86AB00EF29E1 /* Products */,
 				0181019B8659EE60A0855DC5 /* Pods */,
-				46559866274DC553B6E69AE9 /* Frameworks */,
+				5F33943FC62C6F4D6397FB65 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -92,10 +92,10 @@
 			path = AppToPhone;
 			sourceTree = "<group>";
 		};
-		46559866274DC553B6E69AE9 /* Frameworks */ = {
+		5F33943FC62C6F4D6397FB65 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				6F62BD3DAC1B70F678BA842F /* Pods_AppToPhone.framework */,
+				439C58CCEB8AFDCA1B272F9A /* Pods_AppToPhone.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -107,10 +107,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 128364A324ED86AD00EF29E1 /* Build configuration list for PBXNativeTarget "AppToPhone" */;
 			buildPhases = (
-				43EFBB397EDD8401FBC45076 /* [CP] Check Pods Manifest.lock */,
+				23D0D4CFA03367EB6232F0F8 /* [CP] Check Pods Manifest.lock */,
 				1283648624ED86AB00EF29E1 /* Sources */,
 				1283648724ED86AB00EF29E1 /* Frameworks */,
 				1283648824ED86AB00EF29E1 /* Resources */,
+				4DA9F7559F7D2A01652F3D70 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -167,7 +168,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		43EFBB397EDD8401FBC45076 /* [CP] Check Pods Manifest.lock */ = {
+		23D0D4CFA03367EB6232F0F8 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -187,6 +188,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		4DA9F7559F7D2A01652F3D70 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AppToPhone/Pods-AppToPhone-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AppToPhone/Pods-AppToPhone-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AppToPhone/Pods-AppToPhone-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -337,7 +355,7 @@
 		};
 		128364A424ED86AD00EF29E1 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C17FF930A780BE0E839EDF22 /* Pods-AppToPhone.debug.xcconfig */;
+			baseConfigurationReference = 9E2413D68E224B7EBF254AFD /* Pods-AppToPhone.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -356,7 +374,7 @@
 		};
 		128364A524ED86AD00EF29E1 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5EB5AF41866D7C6408ECF750 /* Pods-AppToPhone.release.xcconfig */;
+			baseConfigurationReference = 48B7A72DBB7257556AD4F86F /* Pods-AppToPhone.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
