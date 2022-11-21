@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "13ED6800-6554-4A69-BC5F-77CF2CF0168A"
+   type = "0"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "73AC15E0-C542-428F-857D-D8D203C3FC21"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AppToAppCall/CallViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "115"
+            endingLineNumber = "115"
+            landmarkName = "endCall()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "73AC15E0-C542-428F-857D-D8D203C3FC21 - d9b6e615289a5780"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AppToAppCall.CallViewController.endCall() -&gt; ()"
+                  moduleName = "AppToAppCall"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/aajetunmobi/Documents/projects/sdk/client-sdk-tutorials/app-to-app-swift/AppToApp/AppToAppCall/CallViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "115"
+                  endingLineNumber = "115"
+                  offsetFromSymbolStart = "32">
+               </Location>
+               <Location
+                  uuid = "73AC15E0-C542-428F-857D-D8D203C3FC21 - a1bf1a4bce27c401"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Optional&lt;Swift.Error&gt;) -&gt; () in AppToAppCall.CallViewController.endCall() -&gt; ()"
+                  moduleName = "AppToAppCall"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/aajetunmobi/Documents/projects/sdk/client-sdk-tutorials/app-to-app-swift/AppToApp/AppToAppCall/CallViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "116"
+                  endingLineNumber = "116"
+                  offsetFromSymbolStart = "66">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
