@@ -147,6 +147,10 @@
     NSLog(@"%@, %@", legid, status);
 }
 
+- (void)onError:(nonnull NSError *)error {
+    [self setStatusLabelText:error.localizedDescription];
+}
+
 - (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveInvite:(nonnull VGVoiceInvite *)invite {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self displayIncomingCallAlert:invite];
@@ -165,6 +169,5 @@
 - (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveDTMFForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andDigits:(nonnull NSString *)digits {}
 - (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveEarmuffForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andStatus:(Boolean)earmuffStatus {}
 - (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveMuteForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andStatus:(Boolean)isMuted {}
-
 
 @end
