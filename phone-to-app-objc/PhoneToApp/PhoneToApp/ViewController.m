@@ -1,10 +1,10 @@
 #import "ViewController.h"
-#import <NexmoClient/NexmoClient.h>
+#import <VonageClientSDKVoice/VonageClientSDKVoice.h>
 
-@interface ViewController () <NXMClientDelegate>
+@interface ViewController () <VGVoiceClientDelegate>
 @property UILabel *connectionStatusLabel;
-@property NXMClient *client;
-@property NXMCall *call;
+@property VGVoiceClient *client;
+@property VGVoiceCall *call;
 @end
 
 @implementation ViewController
@@ -13,7 +13,7 @@
     [super viewDidLoad];
     
     self.connectionStatusLabel = [[UILabel alloc] init];
-    self.connectionStatusLabel.text = @"Unknown";
+    self.connectionStatusLabel.text = @"Disconnected";
     self.connectionStatusLabel.textAlignment = NSTextAlignmentCenter;
     self.connectionStatusLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.connectionStatusLabel];
@@ -24,52 +24,71 @@
         [self.connectionStatusLabel.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-20]
     ]];
     
-    self.client = NXMClient.shared;
-    [self.client setDelegate:self];
-    [self.client loginWithAuthToken:@"ALICE_JWT"];
+    VGClientConfig *config = [[VGClientConfig alloc] initWithRegion:VGConfigRegionUS];
+    self.client = [[VGVoiceClient alloc] init];
+    [self.client setConfig:config];
+    self.client.delegate = self;
+    [self.client createSession:@"ALICE_JWT" sessionId:nil callback:^(NSError * _Nullable, NSString * _Nullable) {
+        // TODO: callback params not named
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.connectionStatusLabel.text = @"Connected";
+        });
+    }];
 }
 
-- (void)displayIncomingCallAlert:(NXMCall *)call {
-    NSString *from = call.myMember.channel.from.data;
-    
+- (void)displayIncomingCallAlert:(VGVoiceInvite *)invite {
+    // TODO: No caller info
+    NSString *from = @"Unknown";
+
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Incoming call from" message:from preferredStyle:UIAlertControllerStyleAlert];
+
     [alert addAction:[UIAlertAction actionWithTitle:@"Answer" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        self.call = call;
-        [call answer:nil];
+        [invite answer:^(NSError * _Nullable, VGVoiceCall * _Nullable) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+//            if (error == nil) {
+                self.connectionStatusLabel.text = [NSString stringWithFormat:@"On a call with %@", from];
+//                self.call = call;
+//            } else {
+//                [self setStatusLabelText:error.localizedDescription];
+//            }
+            });
+        }];
     }]];
-    [alert addAction:[UIAlertAction actionWithTitle:@"Reject" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-        [call reject:nil];
+
+    [alert addAction:[UIAlertAction actionWithTitle:@"Reject" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        [invite reject:^(NSError * _Nullable) {
+            // TODO: callback params not named
+//            dispatch_async(dispatch_get_main_queue(), ^{
+    //            if (error) {
+    //                self.connectionStatusLabel.text = error.localizedDescription;
+    //            }
+//            });
+        }];
     }]];
-    
+
     [self presentViewController:alert animated:YES completion:nil];
 }
 
-- (void)client:(nonnull NXMClient *)client didChangeConnectionStatus:(NXMConnectionStatus)status reason:(NXMConnectionStatusReason)reason {
+
+- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveInvite:(nonnull VGVoiceInvite *)invite {
     dispatch_async(dispatch_get_main_queue(), ^{
-        switch (status) {
-            case NXMConnectionStatusConnected:
-                self.connectionStatusLabel.text = @"Connected";
-                break;
-            case NXMConnectionStatusConnecting:
-                self.connectionStatusLabel.text = @"Connecting";
-                break;
-            case NXMConnectionStatusDisconnected:
-                self.connectionStatusLabel.text = @"Disconnected";
-                break;
-        }
+        [self displayIncomingCallAlert:invite];
     });
 }
 
-- (void)client:(nonnull NXMClient *)client didReceiveError:(nonnull NSError *)error {
+// TODO: should be an enum
+- (void)client:(nonnull VGBaseClient *)client didReceiveSessionErrorWithReason:(nonnull NSString *)reason {
     dispatch_async(dispatch_get_main_queue(), ^{
-        self.connectionStatusLabel.text = error.localizedDescription;
+        self.connectionStatusLabel.text = reason;
     });
 }
 
-- (void)client:(NXMClient *)client didReceiveCall:(NXMCall *)call {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self displayIncomingCallAlert:call];
-    });
-}
+// TODO: optional
+- (void)clientDidReconnect:(nonnull VGBaseClient *)client {}
+- (void)clientWillReconnect:(nonnull VGBaseClient *)client {}
+- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveCallTransferForCall:(nonnull VGVoiceCall *)call withNewConversation:(nonnull VGConversation *)newConversation andPrevConversation:(nonnull VGConversation *)prevConversation {}
+- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveDTMFForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andDigits:(nonnull NSString *)digits {}
+- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveEarmuffForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andStatus:(Boolean)earmuffStatus {}
+- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveMuteForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andStatus:(Boolean)isMuted {}
 
 @end
