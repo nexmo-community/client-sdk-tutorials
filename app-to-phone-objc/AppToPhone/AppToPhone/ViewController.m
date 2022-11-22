@@ -73,7 +73,9 @@
     // TODO: callback params not named
     [self.call hangup:^(NSError * _Nullable) {
         self.call = nil;
-        [self.callButton setTitle:@"Call" forState:UIControlStateNormal];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.callButton setTitle:@"Call" forState:UIControlStateNormal];
+        });
     }];
 }
 
