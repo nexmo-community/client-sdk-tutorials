@@ -8,22 +8,17 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.nexmo.client.NexmoCall
-import com.nexmo.client.NexmoCallEventListener
-import com.nexmo.client.NexmoCallHandler
-import com.nexmo.client.NexmoMember
-import com.nexmo.client.NexmoCallMemberStatus
-import com.nexmo.client.NexmoClient
-import com.nexmo.client.NexmoMediaActionState
-import com.nexmo.client.request_listener.NexmoApiError
-import com.nexmo.client.request_listener.NexmoConnectionListener.ConnectionStatus
-import com.nexmo.client.request_listener.NexmoRequestListener
-import com.vonage.tutorial.voice.apptophone.R
+import com.vonage.voice.api.ClientConfig
+import com.vonage.voice.api.ConfigRegion
+import com.vonage.voice.api.VoiceCall
+import com.vonage.voice.api.VoiceClient
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var client: NexmoClient
-    var onGoingCall: NexmoCall? = null
+    //Replace this with your generated JWT
+    private val aliceJWT = ""
+    private lateinit var client: VoiceClient
+    var onGoingCall: VoiceCall? = null
 
     private lateinit var startCallButton: Button
     private lateinit var endCallButton: Button
@@ -50,65 +45,55 @@ class MainActivity : AppCompatActivity() {
             hangup()
         }
 
-        // init client
-        client = NexmoClient.Builder().build(this)
+        client = VoiceClient(this.application.applicationContext)
+        client.setConfig(ClientConfig(ConfigRegion.US))
 
-        client.setConnectionListener { connectionStatus, _ ->
-            runOnUiThread { connectionStatusTextView.text = connectionStatus.toString() }
-
-            if (connectionStatus == ConnectionStatus.CONNECTED) {
-                runOnUiThread { startCallButton.visibility = View.VISIBLE }
-
-                return@setConnectionListener
+        client.createSession(aliceJWT, null) {
+            err, sessionId ->
+            when {
+                err != null -> {
+                    connectionStatusTextView.text = err.localizedMessage
+                    startCallButton.visibility = View.INVISIBLE
+                    endCallButton.visibility = View.INVISIBLE
+                }
+                else -> {
+                    connectionStatusTextView.text = "Connected"
+                    startCallButton.visibility = View.VISIBLE
+                    endCallButton.visibility = View.INVISIBLE
+                }
             }
         }
-
-        client.login("ALICE_JWT")
     }
 
     @SuppressLint("MissingPermission")
     fun startCall() {
-        client.serverCall("PHONE_NUMBER", null, object : NexmoRequestListener<NexmoCall> {
-            override fun onSuccess(call: NexmoCall?) {
-                runOnUiThread {
-                    endCallButton.visibility = View.VISIBLE
-                    startCallButton.visibility = View.INVISIBLE
+        client.serverCall(mapOf("to" to "+447528640068")) {
+            err, outboundCall ->
+            when {
+                err != null -> {
+                    connectionStatusTextView.text = err.localizedMessage
                 }
-
-                onGoingCall = call
-                onGoingCall?.addCallEventListener(object : NexmoCallEventListener {
-                    override fun onMemberStatusUpdated(callStatus: NexmoCallMemberStatus, callMember: NexmoMember) {
-                        if (callStatus == NexmoCallMemberStatus.COMPLETED || callStatus == NexmoCallMemberStatus.CANCELLED) {
-                            onGoingCall = null
-
-                            runOnUiThread {
-                                endCallButton.visibility = View.INVISIBLE
-                                startCallButton.visibility = View.VISIBLE
-                            }
-                        }
-                    }
-
-                    override fun onMuteChanged(nexmoMediaActionState: NexmoMediaActionState, callMember: NexmoMember) {}
-
-                    override fun onEarmuffChanged(nexmoMediaActionState: NexmoMediaActionState, callMember: NexmoMember) {}
-
-                    override fun onDTMF(dtmf: String, callMember: NexmoMember) {}
-                })
+                else -> {
+                    onGoingCall = outboundCall
+                    startCallButton.visibility = View.INVISIBLE
+                    endCallButton.visibility = View.VISIBLE
+                }
             }
+        }
 
-            override fun onError(apiError: NexmoApiError) {
-            }
-        })
     }
 
     private fun hangup() {
-        onGoingCall?.hangup(object : NexmoRequestListener<NexmoCall> {
-            override fun onSuccess(call: NexmoCall?) {
-                onGoingCall = null
+        onGoingCall?.hangup() {
+            err ->
+            when {
+                err != null -> {
+                    connectionStatusTextView.text = err.localizedMessage
+                }
+                else -> {
+                    onGoingCall = null
+                }
             }
-
-            override fun onError(apiError: NexmoApiError) {
-            }
-        })
+        }
     }
 }
