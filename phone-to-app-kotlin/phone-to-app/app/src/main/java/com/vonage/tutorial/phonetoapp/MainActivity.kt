@@ -10,14 +10,14 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.nexmo.client.NexmoCall
-import com.nexmo.client.NexmoClient
-import com.nexmo.client.request_listener.NexmoApiError
-import com.nexmo.client.request_listener.NexmoRequestListener
+import com.vonage.voice.api.*
 
 class MainActivity : AppCompatActivity() {
 
-    private var call: NexmoCall? = null
+    private val aliceJWT = ""
+    private var onGoingCall: VoiceCall? = null
+    private var callInvite: VoiceInvite? = null
+    private lateinit var client: VoiceClient
 
     private lateinit var connectionStatusTextView: TextView
     private lateinit var answerCallButton: Button
@@ -43,67 +43,80 @@ class MainActivity : AppCompatActivity() {
         rejectCallButton.setOnClickListener { rejectCall() }
         endCallButton.setOnClickListener { endCall() }
 
-        // init client
-        val client: NexmoClient = NexmoClient.Builder().build(this)
+        client = VoiceClient(this.application.applicationContext)
+        client.setConfig(ClientConfig(ConfigRegion.US))
 
-        client.setConnectionListener { connectionStatus, _ ->
+
+        client.setCallInviteListener { invite ->
+            callInvite = invite
             runOnUiThread {
-                connectionStatusTextView.text = connectionStatus.toString()
+                answerCallButton.visibility = View.VISIBLE
+                rejectCallButton.visibility = View.VISIBLE
+                endCallButton.visibility = View.GONE
             }
         }
 
-        client.addIncomingCallListener { it ->
-            call = it
-
-            answerCallButton.visibility = View.VISIBLE
-            rejectCallButton.visibility = View.VISIBLE
-            endCallButton.visibility = View.GONE
+        client.createSession(aliceJWT, null) {
+                err, sessionId ->
+            when {
+                err != null -> {
+                    connectionStatusTextView.text = err.localizedMessage
+                }
+                else -> {
+                    connectionStatusTextView.text = "Connected"
+                }
+            }
         }
-
-        client.login("ALICE_JWT")
     }
 
     @SuppressLint("MissingPermission")
     private fun answerCall() {
-        call?.answer(object : NexmoRequestListener<NexmoCall> {
-            override fun onError(p0: NexmoApiError) {
+        callInvite?.answer {
+                err, incomingCall ->
+            when {
+                err != null -> {
+                    connectionStatusTextView.text = err.localizedMessage
+                }
+                else -> {
+                    answerCallButton.visibility = View.GONE
+                    rejectCallButton.visibility = View.GONE
+                    endCallButton.visibility = View.VISIBLE
+                }
             }
-
-            override fun onSuccess(p0: NexmoCall?) {
-                answerCallButton.visibility = View.GONE
-                rejectCallButton.visibility = View.GONE
-                endCallButton.visibility = View.VISIBLE
-            }
-        })
+        }
     }
 
     private fun rejectCall() {
-        call?.hangup(object : NexmoRequestListener<NexmoCall> {
-            override fun onError(p0: NexmoApiError) {
+        callInvite?.reject {
+                err ->
+            when {
+                err != null -> {
+                    connectionStatusTextView.text = err.localizedMessage
+                }
+                else -> {
+                    answerCallButton.visibility = View.GONE
+                    rejectCallButton.visibility = View.GONE
+                    endCallButton.visibility = View.GONE
+                }
             }
-
-            override fun onSuccess(p0: NexmoCall?) {
-                answerCallButton.visibility = View.GONE
-                rejectCallButton.visibility = View.GONE
-                endCallButton.visibility = View.GONE
-            }
-        })
-
-        call = null
+        }
+        onGoingCall = null
     }
 
     private fun endCall() {
-        call?.hangup(object : NexmoRequestListener<NexmoCall> {
-            override fun onError(p0: NexmoApiError) {
+        onGoingCall?.hangup {
+                err ->
+            when {
+                err != null -> {
+                    connectionStatusTextView.text = err.localizedMessage
+                }
+                else -> {
+                    answerCallButton.visibility = View.GONE
+                    rejectCallButton.visibility = View.GONE
+                    endCallButton.visibility = View.GONE
+                }
             }
-
-            override fun onSuccess(p0: NexmoCall?) {
-                answerCallButton.visibility = View.GONE
-                rejectCallButton.visibility = View.GONE
-                endCallButton.visibility = View.GONE
-            }
-        })
-
-        call = null
+        }
+        onGoingCall = null
     }
 }
