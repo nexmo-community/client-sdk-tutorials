@@ -10,22 +10,16 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.forEach
-import com.nexmo.client.NexmoCall
-import com.nexmo.client.NexmoCallEventListener
-import com.nexmo.client.NexmoCallHandler
-import com.nexmo.client.NexmoMember
-import com.nexmo.client.NexmoCallMemberStatus
-import com.nexmo.client.NexmoClient
-import com.nexmo.client.NexmoMediaActionState
-import com.nexmo.client.request_listener.NexmoApiError
-import com.nexmo.client.request_listener.NexmoConnectionListener
-import com.nexmo.client.request_listener.NexmoRequestListener
+import com.vonage.voice.api.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var client: NexmoClient
+    private val aliceJWT = ""
+    private val bobJWT = ""
+    private lateinit var client: VoiceClient
     private var otherUser: String = ""
-    private var onGoingCall: NexmoCall? = null
+    private var onGoingCall: VoiceCall? = null
+    private var callInvite: VoiceInvite? = null
 
     private lateinit var connectionStatusTextView: TextView
     private lateinit var waitingForIncomingCallTextView: TextView
@@ -35,7 +29,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var answerCallButton: Button
     private lateinit var rejectCallButton: Button
     private lateinit var endCallButton: Button
-    private lateinit var callListener: NexmoCallEventListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,48 +55,16 @@ class MainActivity : AppCompatActivity() {
         endCallButton.setOnClickListener { endCall() }
         startCallButton.setOnClickListener { startCall() }
 
-        client = NexmoClient.Builder().build(this)
+        client = VoiceClient(this.application.applicationContext)
+        client.setConfig(ClientConfig(ConfigRegion.US))
 
-        client.setConnectionListener { connectionStatus, _ ->
-            runOnUiThread { connectionStatusTextView.text = connectionStatus.toString() }
-
-            if (connectionStatus == NexmoConnectionListener.ConnectionStatus.CONNECTED) {
-                runOnUiThread {
-                    hideUI()
-                    connectionStatusTextView.visibility = View.VISIBLE
-                    startCallButton.visibility = View.VISIBLE
-                    waitingForIncomingCallTextView.visibility = View.VISIBLE
-                }
-
-                return@setConnectionListener
-            }
-        }
-
-        client.addIncomingCallListener { it ->
-            onGoingCall = it
+        client.setCallInviteListener { invite ->
+            callInvite = invite
             runOnUiThread {
                 hideUI()
                 answerCallButton.visibility = View.VISIBLE
                 rejectCallButton.visibility = View.VISIBLE
             }
-        }
-
-        callListener = object: NexmoCallEventListener {
-            override fun onMemberStatusUpdated(callStatus: NexmoCallMemberStatus, callMember: NexmoMember) {
-                if (callStatus == NexmoCallMemberStatus.COMPLETED || callStatus == NexmoCallMemberStatus.CANCELLED) {
-                    onGoingCall = null
-
-                    runOnUiThread {
-                        hideUI()
-                        startCallButton.visibility = View.VISIBLE
-                        waitingForIncomingCallTextView.visibility = View.VISIBLE
-                    }
-                }
-            }
-
-            override fun onMuteChanged(nexmoMediaActionState: NexmoMediaActionState, callMember: NexmoMember) {}
-            override fun onEarmuffChanged(nexmoMediaActionState: NexmoMediaActionState, callMember: NexmoMember) {}
-            override fun onDTMF(dtmf: String, callMember: NexmoMember) {}
         }
     }
 
@@ -114,81 +75,112 @@ class MainActivity : AppCompatActivity() {
 
     private fun loginAsAlice() {
         otherUser = "Bob"
-        client.login("ALICE_JWT")
+        client.createSession(aliceJWT, null) {
+                err, sessionId ->
+            when {
+                err != null -> {
+                    hideUI()
+                    connectionStatusTextView.visibility = View.VISIBLE
+                    connectionStatusTextView.text = err.localizedMessage
+                }
+                else -> {
+                    hideUI()
+                    connectionStatusTextView.visibility = View.VISIBLE
+                    connectionStatusTextView.text = "Connected"
+                    startCallButton.visibility = View.VISIBLE
+                    waitingForIncomingCallTextView.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 
     private fun loginAsBob() {
         otherUser = "Alice"
-        client.login("BOB_JWT")
+        client.createSession(bobJWT, null) {
+                err, sessionId ->
+            when {
+                err != null -> {
+                    hideUI()
+                    connectionStatusTextView.visibility = View.VISIBLE
+                    connectionStatusTextView.text = err.localizedMessage
+                }
+                else -> {
+                    hideUI()
+                    connectionStatusTextView.visibility = View.VISIBLE
+                    connectionStatusTextView.text = "Connected"
+                    startCallButton.visibility = View.VISIBLE
+                    waitingForIncomingCallTextView.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 
     @SuppressLint("MissingPermission")
     fun startCall() {
-        client.serverCall(otherUser, null, object : NexmoRequestListener<NexmoCall> {
-            override fun onSuccess(call: NexmoCall?) {
-                runOnUiThread {
+        client.serverCall(mapOf("callee" to otherUser)) {
+                err, outboundCall ->
+            when {
+                err != null -> {
+                    connectionStatusTextView.text = err.localizedMessage
+                }
+                else -> {
+                    onGoingCall = outboundCall
                     hideUI()
                     endCallButton.visibility = View.VISIBLE
                 }
-
-                onGoingCall = call
-
-                onGoingCall?.addCallEventListener(callListener)
             }
-
-            override fun onError(apiError: NexmoApiError) {
-            }
-        })
+        }
     }
 
 
     @SuppressLint("MissingPermission")
     private fun answerCall() {
-        onGoingCall?.answer(object : NexmoRequestListener<NexmoCall> {
-            override fun onError(p0: NexmoApiError) {
-            }
-
-            override fun onSuccess(p0: NexmoCall?) {
-                onGoingCall?.addCallEventListener(callListener)
-                runOnUiThread {
+        callInvite?.answer {
+            err, incomingCall ->
+            when {
+                err != null -> {
+                    connectionStatusTextView.text = err.localizedMessage
+                }
+                else -> {
+                    onGoingCall = incomingCall
                     hideUI()
                     endCallButton.visibility = View.VISIBLE
                 }
             }
-        })
+        }
     }
 
     private fun rejectCall() {
-        onGoingCall?.hangup(object : NexmoRequestListener<NexmoCall> {
-            override fun onError(p0: NexmoApiError) {
-            }
-
-            override fun onSuccess(p0: NexmoCall?) {
-                runOnUiThread {
+        callInvite?.reject {
+                err ->
+            when {
+                err != null -> {
+                    connectionStatusTextView.text = err.localizedMessage
+                }
+                else -> {
                     hideUI()
                     startCallButton.visibility = View.VISIBLE
                     waitingForIncomingCallTextView.visibility = View.VISIBLE
                 }
             }
-        })
-
+        }
         onGoingCall = null
     }
 
     private fun endCall() {
-        onGoingCall?.hangup(object : NexmoRequestListener<NexmoCall> {
-            override fun onError(p0: NexmoApiError) {
-            }
-
-            override fun onSuccess(p0: NexmoCall?) {
-                runOnUiThread {
+        onGoingCall?.hangup {
+                err ->
+            when {
+                err != null -> {
+                    connectionStatusTextView.text = err.localizedMessage
+                }
+                else -> {
                     hideUI()
                     startCallButton.visibility = View.VISIBLE
                     waitingForIncomingCallTextView.visibility = View.VISIBLE
                 }
             }
-        })
-
+        }
         onGoingCall = null
     }
 }
