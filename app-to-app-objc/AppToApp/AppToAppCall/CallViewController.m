@@ -2,7 +2,7 @@
 #import "CallViewController.h"
 #import <VonageClientSDKVoice/VonageClientSDKVoice.h>
 
-@interface CallViewController () <VGVoiceClientDelegate, VGCallDelegate>
+@interface CallViewController () <VGVoiceClientDelegate>
 @property UIButton *callButton;
 @property UIButton *hangUpButton;
 @property UILabel *statusLabel;
@@ -76,7 +76,6 @@
         if (error == nil) {
             [self setHangUpButtonHidden:NO];
             self.call = call;
-            self.call.delegate = self;
         } else {
             [self setStatusLabelText:error.localizedDescription];
         }
@@ -84,30 +83,27 @@
 }
 
 - (void)displayIncomingCallAlert:(VGVoiceInvite *)invite {
-    // TODO: No caller info
-    NSString *from = @"Unknown";
+    NSString *from = invite.from.id;
     
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Incoming call from" message:from preferredStyle:UIAlertControllerStyleAlert];
     
     [alert addAction:[UIAlertAction actionWithTitle:@"Answer" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [invite answer:^(NSError * _Nullable, VGVoiceCall * _Nullable) {
-//            if (error == nil) {
+        [invite answer:^(NSError * _Nullable error, VGVoiceCall * _Nullable call) {
+            if (error == nil) {
                 [self setHangUpButtonHidden:NO];
                 [self setStatusLabelText:[NSString stringWithFormat:@"On a call with %@", from]];
-//                self.call = call;
-                self.call.delegate = self;
-//            } else {
-//                [self setStatusLabelText:error.localizedDescription];
-//            }
+                self.call = call;
+            } else {
+                [self setStatusLabelText:error.localizedDescription];
+            }
         }];
     }]];
     
     [alert addAction:[UIAlertAction actionWithTitle:@"Reject" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
-        [invite reject:^(NSError * _Nullable) {
-            // TODO: callback params not named
-//            if (error) {
-//                [self setStatusLabelText:error.localizedDescription];
-//            }
+        [invite reject:^(NSError * _Nullable error) {
+            if (error) {
+                [self setStatusLabelText:error.localizedDescription];
+            }
         }];
     }]];
     
@@ -115,18 +111,23 @@
 }
 
 - (void)endCall {
-    [self.call hangup:^(NSError * _Nullable) {
-        // TODO: callback params
-        [self setHangUpButtonHidden:YES];
-        [self setStatusLabelText:@"Ready to receive call..."];
+    [self.call hangup:^(NSError * _Nullable error) {
+        if (error == nil) {
+            self.call = nil;
+            [self setHangUpButtonHidden:YES];
+            [self setStatusLabelText:@"Ready to receive call..."];
+        } else {
+            [self setStatusLabelText:error.localizedDescription];
+        }
     }];
 }
 
 - (void)logout {
-    [self.client deleteSession:^(NSError * _Nullable) {
-        // TODO: Callback params
+    [self.client deleteSession:^(NSError * _Nullable error) {
+        if (error == nil) {
+            [self dismissViewControllerAnimated:YES completion:nil];
+        }
     }];
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)setHangUpButtonHidden:(BOOL)isHidden {
@@ -142,11 +143,6 @@
     });
 }
 
-// TODO: legId not legid
-- (void)onCallStatusChange:(nonnull NSString *)legid status:(nonnull NSString *)status {
-    NSLog(@"%@, %@", legid, status);
-}
-
 - (void)onError:(nonnull NSError *)error {
     [self setStatusLabelText:error.localizedDescription];
 }
@@ -157,17 +153,16 @@
     });
 }
 
+- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveHangupForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andQuality:(nonnull VGRTCQuality *)callQuality {
+    self.call = nil;
+    [self setHangUpButtonHidden:YES];
+    [self setStatusLabelText:@"Ready to receive call..."];
+}
+
+
 // TODO: should be an enum
 - (void)client:(nonnull VGBaseClient *)client didReceiveSessionErrorWithReason:(nonnull NSString *)reason {
     [self setStatusLabelText:reason];
 }
-
-// TODO: optional
-- (void)clientDidReconnect:(nonnull VGBaseClient *)client {}
-- (void)clientWillReconnect:(nonnull VGBaseClient *)client {}
-- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveCallTransferForCall:(nonnull VGVoiceCall *)call withNewConversation:(nonnull VGConversation *)newConversation andPrevConversation:(nonnull VGConversation *)prevConversation {}
-- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveDTMFForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andDigits:(nonnull NSString *)digits {}
-- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveEarmuffForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andStatus:(Boolean)earmuffStatus {}
-- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveMuteForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andStatus:(Boolean)isMuted {}
 
 @end

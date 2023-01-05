@@ -14,7 +14,7 @@
     [super viewDidLoad];
     
     self.connectionStatusLabel = [[UILabel alloc] init];
-    self.connectionStatusLabel.text = @"Unknown";
+    self.connectionStatusLabel.text = @"Disconnected";
     self.connectionStatusLabel.textAlignment = NSTextAlignmentCenter;
     self.connectionStatusLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.connectionStatusLabel];
@@ -39,11 +39,14 @@
     VGClientConfig *config = [[VGClientConfig alloc] initWithRegion:VGConfigRegionUS];
     self.client = [[VGVoiceClient alloc] init];
     [self.client setConfig:config];
-    [self.client createSession:@"ALICE_JWT" sessionId:nil callback:^(NSError * _Nullable, NSString * _Nullable) {
-        // TODO: callback params not named
+    [self.client createSession:@"ALICE_JWT" sessionId:nil callback:^(NSError * _Nullable error, NSString * _Nullable sessionId) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.callButton setAlpha:1];
-            self.connectionStatusLabel.text = @"Connected";
+            if (error == nil) {
+                [self.callButton setAlpha:1];
+                self.connectionStatusLabel.text = @"Connected";
+            } else {
+                self.connectionStatusLabel.text = error.localizedDescription;
+            }
         });
     }];
 }
@@ -70,8 +73,7 @@
 }
 
 - (void)endCall {
-    // TODO: callback params not named
-    [self.call hangup:^(NSError * _Nullable) {
+    [self.call hangup:^(NSError * _Nullable error) {
         self.call = nil;
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.callButton setTitle:@"Call" forState:UIControlStateNormal];

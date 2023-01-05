@@ -58,12 +58,15 @@
     VGClientConfig *config = [[VGClientConfig alloc] initWithRegion:VGConfigRegionUS];
     self.client = [[VGVoiceClient alloc] init];
     [self.client setConfig:config];
-    [self.client createSession:self.user.jwt sessionId:nil callback:^(NSError * _Nullable, NSString * _Nullable) {
-        // TODO: callback params not named
+    [self.client createSession:self.user.jwt sessionId:nil callback:^(NSError * _Nullable error, NSString * _Nullable sessionId) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[CallViewController alloc] initWithUser:self.user client:self.client]];
-            navigationController.modalPresentationStyle = UIModalPresentationOverFullScreen;
-            [self presentViewController:navigationController animated:YES completion:nil];
+            if (error == nil) {
+                UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[CallViewController alloc] initWithUser:self.user client:self.client]];
+                navigationController.modalPresentationStyle = UIModalPresentationOverFullScreen;
+                [self presentViewController:navigationController animated:YES completion:nil];
+            } else {
+                self.statusLabel.text = error.localizedDescription;
+            }
         });
     }];
 }

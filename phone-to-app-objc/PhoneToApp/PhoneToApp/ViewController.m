@@ -28,53 +28,50 @@
     self.client = [[VGVoiceClient alloc] init];
     [self.client setConfig:config];
     self.client.delegate = self;
-    [self.client createSession:@"ALICE_JWT" sessionId:nil callback:^(NSError * _Nullable, NSString * _Nullable) {
-        // TODO: callback params not named
+    
+    [self.client createSession:@"ALICE_JWT" sessionId:nil callback:^(NSError * _Nullable error, NSString * _Nullable sessionId) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.connectionStatusLabel.text = @"Connected";
+            if (error == nil) {
+                self.connectionStatusLabel.text = @"Connected";
+            } else {
+                self.connectionStatusLabel.text = error.localizedDescription;
+            }
         });
     }];
 }
 
 - (void)displayIncomingCallAlert:(VGVoiceInvite *)invite {
-    // TODO: No caller info
-    NSString *from = @"Unknown";
+    NSString *from = invite.from.id;
 
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Incoming call from" message:from preferredStyle:UIAlertControllerStyleAlert];
 
     [alert addAction:[UIAlertAction actionWithTitle:@"Answer" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [invite answer:^(NSError * _Nullable, VGVoiceCall * _Nullable) {
+        [invite answer:^(NSError * _Nullable error, VGVoiceCall * _Nullable call) {
             dispatch_async(dispatch_get_main_queue(), ^{
-//            if (error == nil) {
-                self.connectionStatusLabel.text = [NSString stringWithFormat:@"On a call with %@", from];
-//                self.call = call;
-//            } else {
-//                [self setStatusLabelText:error.localizedDescription];
-//            }
+                if (error == nil) {
+                    self.connectionStatusLabel.text = [NSString stringWithFormat:@"On a call with %@", from];
+                    self.call = call;
+                } else {
+                    self.connectionStatusLabel.text = error.localizedDescription;
+                }
             });
         }];
     }]];
 
     [alert addAction:[UIAlertAction actionWithTitle:@"Reject" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
-        [invite reject:^(NSError * _Nullable) {
-            // TODO: callback params not named
-//            dispatch_async(dispatch_get_main_queue(), ^{
-    //            if (error) {
-    //                self.connectionStatusLabel.text = error.localizedDescription;
-    //            }
-//            });
+        [invite reject:^(NSError * _Nullable error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (error) {
+                    self.connectionStatusLabel.text = error.localizedDescription;
+                }
+            });
         }];
     }]];
 
     [self presentViewController:alert animated:YES completion:nil];
 }
 
-
-- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveInvite:(nonnull VGVoiceInvite *)invite {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self displayIncomingCallAlert:invite];
-    });
-}
+// MARK: - VGBaseClientDelegate -
 
 // TODO: should be an enum
 - (void)client:(nonnull VGBaseClient *)client didReceiveSessionErrorWithReason:(nonnull NSString *)reason {
@@ -83,12 +80,19 @@
     });
 }
 
-// TODO: optional
-- (void)clientDidReconnect:(nonnull VGBaseClient *)client {}
-- (void)clientWillReconnect:(nonnull VGBaseClient *)client {}
-- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveCallTransferForCall:(nonnull VGVoiceCall *)call withNewConversation:(nonnull VGConversation *)newConversation andPrevConversation:(nonnull VGConversation *)prevConversation {}
-- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveDTMFForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andDigits:(nonnull NSString *)digits {}
-- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveEarmuffForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andStatus:(Boolean)earmuffStatus {}
-- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveMuteForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andStatus:(Boolean)isMuted {}
+// MARK: - VGVoiceClientDelegate -
+
+- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveInvite:(nonnull VGVoiceInvite *)invite {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self displayIncomingCallAlert:invite];
+    });
+}
+
+- (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveHangupForCall:(nonnull VGVoiceCall *)call withLegId:(nonnull NSString *)legId andQuality:(nonnull VGRTCQuality *)callQuality {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.connectionStatusLabel.text = @"Connected";
+        self.call = nil;
+    });
+}
 
 @end
