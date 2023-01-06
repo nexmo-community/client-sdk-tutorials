@@ -1,14 +1,13 @@
 import UIKit
-import NexmoClient
+import VonageClientSDKVoice
 
 class ViewController: UIViewController {
     
     let loginAliceButton = UIButton(type: .system)
     let loginBobButton = UIButton(type: .system)
-    let statusLabel = UILabel()
+    let connectionStatusLabel = UILabel()
     
-    let client = NXMClient.shared
-    let nc = NotificationCenter.default
+    var client = VGVoiceClient()
     
     var user: User? {
         didSet {
@@ -28,10 +27,10 @@ class ViewController: UIViewController {
         loginBobButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(loginBobButton)
         
-        statusLabel.text = ""
-        statusLabel.textAlignment = .center
-        statusLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(statusLabel)
+        connectionStatusLabel.text = ""
+        connectionStatusLabel.textAlignment = .center
+        connectionStatusLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(connectionStatusLabel)
         
         NSLayoutConstraint.activate([
             loginAliceButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -44,10 +43,10 @@ class ViewController: UIViewController {
             loginBobButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             loginBobButton.topAnchor.constraint(equalTo: loginAliceButton.bottomAnchor, constant: 20),
             
-            statusLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            statusLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            statusLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            statusLabel.topAnchor.constraint(equalTo: loginBobButton.bottomAnchor, constant: 20)
+            connectionStatusLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            connectionStatusLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            connectionStatusLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            connectionStatusLabel.topAnchor.constraint(equalTo: loginBobButton.bottomAnchor, constant: 20)
         ])
         
         loginAliceButton.addTarget(self, action: #selector(setUserAsAlice), for: .touchUpInside)
@@ -56,8 +55,20 @@ class ViewController: UIViewController {
     
     func login() {
         guard let user = self.user else { return }
-        client.setDelegate(self)
-        client.login(withAuthToken: user.jwt)
+        let config = VGClientConfig(region: .US)
+        client.setConfig(config)
+        client.createSession(user.jwt, sessionId: nil) { error, sessionId in
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                if error == nil {
+                    let navigationController = UINavigationController(rootViewController: CallViewController(user: user, client: self.client))
+                    navigationController.modalPresentationStyle = .overFullScreen
+                    self.present(navigationController, animated: true, completion: nil)
+                } else {
+                    self.connectionStatusLabel.text = error?.localizedDescription
+                }
+            }
+        }
     }
     
     @objc func setUserAsAlice() {
@@ -66,43 +77,6 @@ class ViewController: UIViewController {
     
     @objc func setUserAsBob() {
         self.user = User.Bob
-    }
-}
-
-extension ViewController: NXMClientDelegate {
-    func client(_ client: NXMClient, didChange status: NXMConnectionStatus, reason: NXMConnectionStatusReason) {
-        DispatchQueue.main.async {
-            guard let user = self.user else { return }
-            switch status {
-            case .connected:
-                self.statusLabel.text = "Connected"
-                let navigationController = UINavigationController(rootViewController: CallViewController(user: user))
-                navigationController.modalPresentationStyle = .overFullScreen
-                self.present(navigationController, animated: true, completion: nil)
-            case .disconnected:
-                self.statusLabel.text = "Disconnected"
-            case .connecting:
-                self.statusLabel.text = "Connecting"
-            @unknown default:
-                self.statusLabel.text = ""
-            }
-        }
-    }
-    
-    func client(_ client: NXMClient, didReceiveError error: Error) {
-        DispatchQueue.main.async {
-            self.statusLabel.text = error.localizedDescription
-        }
-    }
-    
-    func client(_ client: NXMClient, didReceive call: NXMCall) {
-        nc.post(name: .call, object: call)
-    }
-}
-
-extension Notification.Name {
-    static var call: Notification.Name {
-        return .init(rawValue: "NXMClient.incomingCall")
     }
 }
 

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		158D922936A533C819ACA7D5 /* Pods_AppToPhone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA278009C3D2F11B36D28AB /* Pods_AppToPhone.framework */; };
+		BB5A1F51E79053AEEFF18619 /* Pods_AppToPhone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49672D831568DDECA2CA36CF /* Pods_AppToPhone.framework */; };
 		DAAF4AD226020EFF00EB4D6A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAAF4AD126020EFF00EB4D6A /* AppDelegate.swift */; };
 		DAAF4AD426020EFF00EB4D6A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAAF4AD326020EFF00EB4D6A /* SceneDelegate.swift */; };
 		DAAF4AD626020EFF00EB4D6A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAAF4AD526020EFF00EB4D6A /* ViewController.swift */; };
@@ -17,8 +17,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		302D22B69151028E8F9D7DAB /* Pods-AppToPhone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppToPhone.release.xcconfig"; path = "Target Support Files/Pods-AppToPhone/Pods-AppToPhone.release.xcconfig"; sourceTree = "<group>"; };
-		6029245B347990615F5B6B6A /* Pods-AppToPhone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppToPhone.debug.xcconfig"; path = "Target Support Files/Pods-AppToPhone/Pods-AppToPhone.debug.xcconfig"; sourceTree = "<group>"; };
+		24040D76D527427885CFC67F /* Pods-AppToPhone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppToPhone.release.xcconfig"; path = "Target Support Files/Pods-AppToPhone/Pods-AppToPhone.release.xcconfig"; sourceTree = "<group>"; };
+		3F9A7FBC8670B57593EBAF4A /* Pods-AppToPhone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppToPhone.debug.xcconfig"; path = "Target Support Files/Pods-AppToPhone/Pods-AppToPhone.debug.xcconfig"; sourceTree = "<group>"; };
+		49672D831568DDECA2CA36CF /* Pods_AppToPhone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AppToPhone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DAAF4ACE26020EFF00EB4D6A /* AppToPhone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppToPhone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DAAF4AD126020EFF00EB4D6A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DAAF4AD326020EFF00EB4D6A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -27,7 +28,6 @@
 		DAAF4ADA26020F0100EB4D6A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DAAF4ADD26020F0100EB4D6A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DAAF4ADF26020F0100EB4D6A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		FDA278009C3D2F11B36D28AB /* Pods_AppToPhone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AppToPhone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,7 +35,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				158D922936A533C819ACA7D5 /* Pods_AppToPhone.framework in Frameworks */,
+				BB5A1F51E79053AEEFF18619 /* Pods_AppToPhone.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -45,16 +45,16 @@
 		1042EEA24FB4F10A6BE716B7 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				6029245B347990615F5B6B6A /* Pods-AppToPhone.debug.xcconfig */,
-				302D22B69151028E8F9D7DAB /* Pods-AppToPhone.release.xcconfig */,
+				3F9A7FBC8670B57593EBAF4A /* Pods-AppToPhone.debug.xcconfig */,
+				24040D76D527427885CFC67F /* Pods-AppToPhone.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		105EC6ACD0BF6E219377489C /* Frameworks */ = {
+		AF855264C3697560FFEB6668 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				FDA278009C3D2F11B36D28AB /* Pods_AppToPhone.framework */,
+				49672D831568DDECA2CA36CF /* Pods_AppToPhone.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -65,7 +65,7 @@
 				DAAF4AD026020EFF00EB4D6A /* AppToPhone */,
 				DAAF4ACF26020EFF00EB4D6A /* Products */,
 				1042EEA24FB4F10A6BE716B7 /* Pods */,
-				105EC6ACD0BF6E219377489C /* Frameworks */,
+				AF855264C3697560FFEB6668 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -98,11 +98,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DAAF4AE226020F0100EB4D6A /* Build configuration list for PBXNativeTarget "AppToPhone" */;
 			buildPhases = (
-				9B22135856911BD06BBCE230 /* [CP] Check Pods Manifest.lock */,
+				5B2705EF23362C09E626EF5C /* [CP] Check Pods Manifest.lock */,
 				DAAF4ACA26020EFF00EB4D6A /* Sources */,
 				DAAF4ACB26020EFF00EB4D6A /* Frameworks */,
 				DAAF4ACC26020EFF00EB4D6A /* Resources */,
-				0CD96DB48CC478A1EFCFFC9D /* [CP] Embed Pods Frameworks */,
+				D274B4A5655B79BD8B6DF924 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -159,24 +159,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0CD96DB48CC478A1EFCFFC9D /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AppToPhone/Pods-AppToPhone-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AppToPhone/Pods-AppToPhone-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AppToPhone/Pods-AppToPhone-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9B22135856911BD06BBCE230 /* [CP] Check Pods Manifest.lock */ = {
+		5B2705EF23362C09E626EF5C /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -196,6 +179,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D274B4A5655B79BD8B6DF924 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AppToPhone/Pods-AppToPhone-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AppToPhone/Pods-AppToPhone-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AppToPhone/Pods-AppToPhone-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -351,7 +351,7 @@
 		};
 		DAAF4AE326020F0100EB4D6A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6029245B347990615F5B6B6A /* Pods-AppToPhone.debug.xcconfig */;
+			baseConfigurationReference = 3F9A7FBC8670B57593EBAF4A /* Pods-AppToPhone.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -371,7 +371,7 @@
 		};
 		DAAF4AE426020F0100EB4D6A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 302D22B69151028E8F9D7DAB /* Pods-AppToPhone.release.xcconfig */;
+			baseConfigurationReference = 24040D76D527427885CFC67F /* Pods-AppToPhone.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

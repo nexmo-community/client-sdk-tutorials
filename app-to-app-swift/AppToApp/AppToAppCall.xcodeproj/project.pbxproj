@@ -14,10 +14,11 @@
 		12CE027524D033FC008D7847 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 12CE027424D033FC008D7847 /* Assets.xcassets */; };
 		12CE027824D033FC008D7847 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 12CE027624D033FC008D7847 /* LaunchScreen.storyboard */; };
 		12CE028024D0428F008D7847 /* CallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12CE027F24D0428F008D7847 /* CallViewController.swift */; };
-		CF5DB223567C3316CC068F6A /* Pods_AppToAppCall.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB8B177F7D9E40E9A5A2D888 /* Pods_AppToAppCall.framework */; };
+		5EEF8F26ECCC05BFCC3264EE /* Pods_AppToAppCall.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29C1CA5BB601AB725B9AC901 /* Pods_AppToAppCall.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0E8449BABD95CF4F48CF543A /* Pods-AppToAppCall.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppToAppCall.debug.xcconfig"; path = "Target Support Files/Pods-AppToAppCall/Pods-AppToAppCall.debug.xcconfig"; sourceTree = "<group>"; };
 		12CE026824D033F9008D7847 /* AppToAppCall.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppToAppCall.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		12CE026B24D033F9008D7847 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		12CE026D24D033F9008D7847 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -27,9 +28,8 @@
 		12CE027724D033FC008D7847 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		12CE027924D033FC008D7847 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		12CE027F24D0428F008D7847 /* CallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallViewController.swift; sourceTree = "<group>"; };
-		93E078C0BB636B74D54197EE /* Pods-AppToAppCall.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppToAppCall.release.xcconfig"; path = "Target Support Files/Pods-AppToAppCall/Pods-AppToAppCall.release.xcconfig"; sourceTree = "<group>"; };
-		9C77C98AB22E04667734AF9B /* Pods-AppToAppCall.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppToAppCall.debug.xcconfig"; path = "Target Support Files/Pods-AppToAppCall/Pods-AppToAppCall.debug.xcconfig"; sourceTree = "<group>"; };
-		CB8B177F7D9E40E9A5A2D888 /* Pods_AppToAppCall.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AppToAppCall.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		29C1CA5BB601AB725B9AC901 /* Pods_AppToAppCall.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AppToAppCall.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B6E916D540D9F494FA2DC77 /* Pods-AppToAppCall.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppToAppCall.release.xcconfig"; path = "Target Support Files/Pods-AppToAppCall/Pods-AppToAppCall.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,28 +37,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CF5DB223567C3316CC068F6A /* Pods_AppToAppCall.framework in Frameworks */,
+				5EEF8F26ECCC05BFCC3264EE /* Pods_AppToAppCall.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		040B1AB449F117EB8396630C /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				CB8B177F7D9E40E9A5A2D888 /* Pods_AppToAppCall.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		12CE025F24D033F9008D7847 = {
 			isa = PBXGroup;
 			children = (
 				12CE026A24D033F9008D7847 /* AppToAppCall */,
 				12CE026924D033F9008D7847 /* Products */,
 				48D7A6F895ED9952088BC1AC /* Pods */,
-				040B1AB449F117EB8396630C /* Frameworks */,
+				FDD3F4418CB4A7CCD4BA445C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -88,10 +80,18 @@
 		48D7A6F895ED9952088BC1AC /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				9C77C98AB22E04667734AF9B /* Pods-AppToAppCall.debug.xcconfig */,
-				93E078C0BB636B74D54197EE /* Pods-AppToAppCall.release.xcconfig */,
+				0E8449BABD95CF4F48CF543A /* Pods-AppToAppCall.debug.xcconfig */,
+				5B6E916D540D9F494FA2DC77 /* Pods-AppToAppCall.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		FDD3F4418CB4A7CCD4BA445C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				29C1CA5BB601AB725B9AC901 /* Pods_AppToAppCall.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -101,10 +101,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 12CE027C24D033FC008D7847 /* Build configuration list for PBXNativeTarget "AppToAppCall" */;
 			buildPhases = (
-				A76585C30B92A6D6DA91B0B2 /* [CP] Check Pods Manifest.lock */,
+				11C32F910C33A853F15F780B /* [CP] Check Pods Manifest.lock */,
 				12CE026424D033F9008D7847 /* Sources */,
 				12CE026524D033F9008D7847 /* Frameworks */,
 				12CE026624D033F9008D7847 /* Resources */,
+				057C846064EF8F464C1F86F8 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -162,7 +163,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		A76585C30B92A6D6DA91B0B2 /* [CP] Check Pods Manifest.lock */ = {
+		057C846064EF8F464C1F86F8 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AppToAppCall/Pods-AppToAppCall-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AppToAppCall/Pods-AppToAppCall-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AppToAppCall/Pods-AppToAppCall-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		11C32F910C33A853F15F780B /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -336,7 +354,7 @@
 		};
 		12CE027D24D033FC008D7847 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9C77C98AB22E04667734AF9B /* Pods-AppToAppCall.debug.xcconfig */;
+			baseConfigurationReference = 0E8449BABD95CF4F48CF543A /* Pods-AppToAppCall.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -356,7 +374,7 @@
 		};
 		12CE027E24D033FC008D7847 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 93E078C0BB636B74D54197EE /* Pods-AppToAppCall.release.xcconfig */;
+			baseConfigurationReference = 5B6E916D540D9F494FA2DC77 /* Pods-AppToAppCall.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;

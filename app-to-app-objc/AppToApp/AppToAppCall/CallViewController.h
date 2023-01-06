@@ -8,12 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import "User.h"
+@class VGVoiceClient;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface CallViewController : UIViewController
 
--(instancetype)initWithUser:(User *)user;
+-(instancetype)initWithUser:(User *)user client:(VGVoiceClient *)client;
 
 @end
 

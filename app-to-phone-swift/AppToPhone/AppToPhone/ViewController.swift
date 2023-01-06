@@ -1,38 +1,50 @@
 import UIKit
-import NexmoClient
+import VonageClientSDKVoice
 
 class ViewController: UIViewController {
     
     var connectionStatusLabel = UILabel()
     var callButton = UIButton(type: .roundedRect)
-    let client = NXMClient.shared
-    var call: NXMCall?
+    let client = VGVoiceClient()
+    var call: VGVoiceCall?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        connectionStatusLabel.text = "Unknown"
+        connectionStatusLabel.text = "Disconnected"
         connectionStatusLabel.textAlignment = .center
         connectionStatusLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(connectionStatusLabel)
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[label]-20-|",
-                                                           options: [], metrics: nil, views: ["label" : connectionStatusLabel]))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-40-[label(20)]",
-                                                           options: [], metrics: nil, views: ["label" : connectionStatusLabel]))
-        
+
         callButton.setTitle("Call", for: .normal)
         callButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(callButton)
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[button]-20-|",
-                                                           options: [], metrics: nil, views: ["button": callButton]))
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[label]-40-[button(40)]",
-                                                           options: [], metrics: nil, views: ["label" : connectionStatusLabel, "button": callButton]))
         callButton.alpha = 0
         callButton.addTarget(self, action: #selector(callButtonPressed(_:)), for: .touchUpInside)
+        view.addSubview(callButton)
         
-        client.setDelegate(self)
-        client.login(withAuthToken: "ALICE_JWT")
+        NSLayoutConstraint.activate([
+            connectionStatusLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            connectionStatusLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            
+            callButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            callButton.topAnchor.constraint(equalTo: connectionStatusLabel.bottomAnchor, constant: 24)
+        ])
+        
+        let config = VGClientConfig(region: .US)
+        client.setConfig(config)
+        
+        client.createSession("ALICE_JWT", sessionId: nil) { error, sessionId in
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                if error == nil {
+                    self.callButton.alpha = 1
+                    self.connectionStatusLabel.text = "Connected"
+                } else {
+                    self.connectionStatusLabel.text = error?.localizedDescription
+                }
+            }
+        }
     }
     
     @IBAction func callButtonPressed(_ sender: Any) {
@@ -45,48 +57,28 @@ class ViewController: UIViewController {
     
     func placeCall() {
         callButton.setTitle("End Call", for: .normal)
-        client.serverCall(withCallee: "PHONE_NUMBER", customData: nil) {  [weak self] (error, call) in
-            if let error = error {
-                self?.connectionStatusLabel.text = error.localizedDescription
-                self?.callButton.setTitle("Call", for: .normal)
+        client.serverCall(["callee": "PHONE_NUMBER"]) { error, call in
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                if error == nil {
+                    self.call = call
+                } else {
+                    self.callButton.setTitle("Call", for: .normal)
+                    self.connectionStatusLabel.text = error?.localizedDescription
+                }
             }
-            self?.call = call
         }
     }
     
     func endCall() {
-        call?.hangup()
-        call = nil
-        callButton.setTitle("Call", for: .normal)
-    }
-}
-
-extension ViewController: NXMClientDelegate {
-    
-    func client(_ client: NXMClient, didReceiveError error: Error) {
-        print("✆  ‼️ connection error: \(error.localizedDescription)")
-        DispatchQueue.main.async { [weak self] in
-            self?.callButton.alpha = 0
-            self?.connectionStatusLabel.text = error.localizedDescription
-        }
-    }
-    
-    func client(_ client: NXMClient, didChange status: NXMConnectionStatus,
-                reason: NXMConnectionStatusReason) {
-        DispatchQueue.main.async { [weak self] in
-            self?.callButton.alpha = 0
-            switch status {
-            case .connected:
-                self?.connectionStatusLabel.text = "Connected"
-                self?.callButton.alpha = 1
-            case .disconnected:
-                self?.connectionStatusLabel.text = "Disconnected"
-            case .connecting:
-                self?.connectionStatusLabel.text = "Connecting"
-            @unknown default:
-                self?.connectionStatusLabel.text = "Unknown"
+        call?.hangup({ error in
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                if error == nil {
+                    self.call = nil
+                    self.callButton.setTitle("Call", for: .normal)
+                }
             }
-        }
+        })
     }
-    
 }

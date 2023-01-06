@@ -1,5 +1,5 @@
 import UIKit
-import NexmoClient
+import VonageClientSDKVoice
 
 class CallViewController: UIViewController {
     
@@ -8,13 +8,13 @@ class CallViewController: UIViewController {
     let statusLabel = UILabel()
     
     let user: User
-    let client = NXMClient.shared
-    let nc = NotificationCenter.default
+    let client: VGVoiceClient
     
-    var call: NXMCall?
+    var call: VGVoiceCall?
     
-    init(user: User) {
+    init(user: User, client: VGVoiceClient) {
         self.user = user
+        self.client = client
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -60,71 +60,77 @@ class CallViewController: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .done, target: self, action: #selector(self.logout))
         callButton.setTitle("Call \(user.callPartnerName)", for: .normal)
         
-        nc.addObserver(self, selector: #selector(didReceiveCall), name: .call, object: nil)
         
         hangUpButton.addTarget(self, action: #selector(endCall), for: .touchUpInside)
         callButton.addTarget(self, action: #selector(makeCall), for: .touchUpInside)
+        
+        self.client.delegate = self
     }
     
     @objc private func makeCall() {
         setStatusLabelText("Calling \(user.callPartnerName)")
         
-        client.serverCall(withCallee: user.callPartnerName, customData: nil) { error, call in
-            if error != nil {
+        client.serverCall(["callee": user.callPartnerName]) { error, call in
+            if error == nil {
+                self.setHangUpButtonHidden(false)
+                self.call = call
+            } else {
                 self.setStatusLabelText(error?.localizedDescription)
-                return
             }
-            call?.setDelegate(self)
-            self.setHangUpButtonHidden(false)
-            self.call = call
         }
     }
     
-    @objc private func didReceiveCall(_ notification: Notification) {
-        guard let call = notification.object as? NXMCall else { return }
-        DispatchQueue.main.async { [weak self] in
-            self?.displayIncomingCallAlert(call: call)
-        }
-    }
-    
-    private func displayIncomingCallAlert(call: NXMCall) {
-        let from = call.myMember?.channel?.from.data ?? "Unknown"
+    func displayIncomingCallAlert(callInvite: VGVoiceInvite) {
+        let from = callInvite.from.id ?? "Unknown"
         
         let alert = UIAlertController(title: "Incoming call from", message: from, preferredStyle: .alert)
+        
         alert.addAction(UIAlertAction(title: "Answer", style: .default, handler: { _ in
-            call.answer { error in
-                if error != nil {
+            callInvite.answer { error, call in
+                if error == nil {
+                    self.setHangUpButtonHidden(false)
+                    self.setStatusLabelText("On a call with \(from)")
+                    self.call = call
+                } else {
                     self.setStatusLabelText(error?.localizedDescription)
-                    return
                 }
-                call.setDelegate(self)
-                self.setHangUpButtonHidden(false)
-                self.setStatusLabelText("On a call with \(from)")
-                self.call = call
             }
         }))
         
         alert.addAction(UIAlertAction(title: "Reject", style: .destructive, handler: { _ in
-            call.reject(nil)
+            callInvite.reject { error in
+                if let error {
+                    self.setStatusLabelText(error.localizedDescription)
+                }
+            }
         }))
         
         self.present(alert, animated: true, completion: nil)
     }
     
     @objc private func endCall() {
-        call?.hangup()
-        self.setHangUpButtonHidden(true)
-        self.setStatusLabelText("Ready to receive call...")
+        call?.hangup({ error in
+            if error == nil {
+                self.call = nil
+                self.setHangUpButtonHidden(true)
+                self.setStatusLabelText("Ready to receive call...")
+            }
+        })
     }
     
     @objc func logout() {
-        client.logout()
-        dismiss(animated: true, completion: nil)
+        client.deleteSession { error in
+            if error == nil {
+                DispatchQueue.main.async { [weak self] in
+                    self?.dismiss(animated: true, completion: nil)
+                }
+            }
+        }
     }
     
     private func setHangUpButtonHidden(_ isHidden: Bool) {
         DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.hangUpButton.isHidden = isHidden
             self.callButton.isHidden = !self.hangUpButton.isHidden
         }
@@ -132,30 +138,27 @@ class CallViewController: UIViewController {
     
     private func setStatusLabelText(_ text: String?) {
         DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.statusLabel.text = text
         }
     }
 }
 
-extension CallViewController: NXMCallDelegate {
-    func call(_ call: NXMCall, didUpdate callMember: NXMMember, with status: NXMCallMemberStatus) {
-        switch status {
-        case .answered:
-            guard callMember.user.name != self.user.name else { return }
-            setStatusLabelText("On a call with \(callMember.user.name)")
-        case .completed:
-            setStatusLabelText("Call ended")
-            setHangUpButtonHidden(true)
-            self.call = nil
-        default:
-            break
+extension CallViewController: VGVoiceClientDelegate {
+    func voiceClient(_ client: VGVoiceClient, didReceive invite: VGVoiceInvite) {
+        DispatchQueue.main.async { [weak self] in
+            self?.displayIncomingCallAlert(callInvite: invite)
         }
     }
     
-    func call(_ call: NXMCall, didReceive error: Error) {
-        setStatusLabelText(error.localizedDescription)
+    func voiceClient(_ client: VGVoiceClient, didReceiveHangupFor call: VGVoiceCall, withLegId legId: String, andQuality callQuality: VGRTCQuality) {
+        self.call = nil
+        self.setHangUpButtonHidden(true)
+        self.setStatusLabelText("Ready to receive call...")
     }
     
-    func call(_ call: NXMCall, didUpdate callMember: NXMMember, isMuted muted: Bool) {}
+    // TODO: should be an enum
+    func client(_ client: VGBaseClient, didReceiveSessionErrorWithReason reason: String) {
+        self.setStatusLabelText(reason)
+    }
 }

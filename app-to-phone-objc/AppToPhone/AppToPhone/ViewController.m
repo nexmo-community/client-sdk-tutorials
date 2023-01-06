@@ -1,11 +1,11 @@
 #import "ViewController.h"
-#import <NexmoClient/NexmoClient.h>
+#import <VonageClientSDKVoice/VonageClientSDKVoice.h>
 
-@interface ViewController () <NXMClientDelegate>
+@interface ViewController ()
 @property UIButton *callButton;
 @property UILabel *connectionStatusLabel;
-@property NXMClient *client;
-@property NXMCall * call;
+@property VGVoiceClient *client;
+@property VGVoiceCall * call;
 @end
 
 @implementation ViewController
@@ -14,7 +14,7 @@
     [super viewDidLoad];
     
     self.connectionStatusLabel = [[UILabel alloc] init];
-    self.connectionStatusLabel.text = @"Unknown";
+    self.connectionStatusLabel.text = @"Disconnected";
     self.connectionStatusLabel.textAlignment = NSTextAlignmentCenter;
     self.connectionStatusLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.connectionStatusLabel];
@@ -36,9 +36,19 @@
         [self.callButton.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-20]
     ]];
     
-    self.client = NXMClient.shared;
-    [self.client setDelegate:self];
-    [self.client loginWithAuthToken:@"ALICE_JWT"];
+    VGClientConfig *config = [[VGClientConfig alloc] initWithRegion:VGConfigRegionUS];
+    self.client = [[VGVoiceClient alloc] init];
+    [self.client setConfig:config];
+    [self.client createSession:@"ALICE_JWT" sessionId:nil callback:^(NSError * _Nullable error, NSString * _Nullable sessionId) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error == nil) {
+                [self.callButton setAlpha:1];
+                self.connectionStatusLabel.text = @"Connected";
+            } else {
+                self.connectionStatusLabel.text = error.localizedDescription;
+            }
+        });
+    }];
 }
 
 - (void)callButtonPressed {
@@ -50,46 +60,25 @@
 }
 
 - (void)placeCall {
-    [self.client serverCallWithCallee:@"PHONE_NUMBER" customData:nil completionHandler:^(NSError * _Nullable error, NXMCall * _Nullable call) {
-        if (error) {
-            self.connectionStatusLabel.text = error.localizedDescription;
-            return;
-        }
-        
-        self.call = call;
+    [self.client serverCall:@{@"callee": @"PHONE_NUMBER"} callback:^(NSError * _Nullable error, VGVoiceCall * _Nullable call) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.callButton setTitle:@"End call" forState:UIControlStateNormal];
+            if (error == nil) {
+                self.call = call;
+                [self.callButton setTitle:@"End call" forState:UIControlStateNormal];
+            } else {
+                self.connectionStatusLabel.text = error.localizedDescription;
+            }
         });
     }];
 }
 
 - (void)endCall {
-    [self.call hangup];
-    self.call = nil;
-    [self.callButton setTitle:@"Call" forState:UIControlStateNormal];
+    [self.call hangup:^(NSError * _Nullable error) {
+        self.call = nil;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.callButton setTitle:@"Call" forState:UIControlStateNormal];
+        });
+    }];
 }
 
-- (void)client:(nonnull NXMClient *)client didChangeConnectionStatus:(NXMConnectionStatus)status reason:(NXMConnectionStatusReason)reason {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        switch (status) {
-            case NXMConnectionStatusConnected:
-                [self.callButton setAlpha:1];
-                self.connectionStatusLabel.text = @"Connected";
-                break;
-            case NXMConnectionStatusConnecting:
-                self.connectionStatusLabel.text = @"Connecting";
-                break;
-            case NXMConnectionStatusDisconnected:
-                self.connectionStatusLabel.text = @"Disconnected";
-                break;
-        }
-    });
-}
-
-- (void)client:(nonnull NXMClient *)client didReceiveError:(nonnull NSError *)error {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.connectionStatusLabel.text = error.localizedDescription;
-        [self.callButton setAlpha:0];
-    });
-}
 @end
