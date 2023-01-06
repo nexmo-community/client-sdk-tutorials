@@ -143,10 +143,6 @@
     });
 }
 
-- (void)onError:(nonnull NSError *)error {
-    [self setStatusLabelText:error.localizedDescription];
-}
-
 - (void)voiceClient:(nonnull VGVoiceClient *)client didReceiveInvite:(nonnull VGVoiceInvite *)invite {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self displayIncomingCallAlert:invite];

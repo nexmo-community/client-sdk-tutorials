@@ -39,8 +39,7 @@ class ViewController: UIViewController {
     }
     
     func displayIncomingCallAlert(callInvite: VGVoiceInvite) {
-        // TODO: No caller info
-        let from = "Unknown"
+        let from = callInvite.from.id ?? "Unknown"
         
         let alert = UIAlertController(title: "Incoming call from", message: from, preferredStyle: .alert)
         
@@ -52,7 +51,7 @@ class ViewController: UIViewController {
             }
         }))
         
-        alert.addAction(UIAlertAction(title: "Reject", style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: "Reject", style: .destructive, handler: { _ in
             callInvite.reject { error in
                 if let error {
                     self.connectionStatusLabel.text = error.localizedDescription
@@ -72,17 +71,17 @@ extension ViewController: VGVoiceClientDelegate {
         }
     }
     
+    func voiceClient(_ client: VGVoiceClient, didReceiveHangupFor call: VGVoiceCall, withLegId legId: String, andQuality callQuality: VGRTCQuality) {
+        DispatchQueue.main.async { [weak self] in
+            self?.call = nil
+            self?.connectionStatusLabel.text = "Call Ended"
+        }
+    }
+    
+    // TODO: should be an enum
     func client(_ client: VGBaseClient, didReceiveSessionErrorWithReason reason: String) {
         DispatchQueue.main.async { [weak self] in
             self?.connectionStatusLabel.text = reason
         }
     }
-    
-    // TODO: Some (if not most) of these should be optional!
-    func clientWillReconnect(_ client: VGBaseClient) {}
-    func clientDidReconnect(_ client: VGBaseClient) {}
-    func voiceClient(_ client: VGVoiceClient, didReceiveCallTransferFor call: VGVoiceCall, withNewConversation newConversation: VGConversation, andPrevConversation prevConversation: VGConversation) {}
-    func voiceClient(_ client: VGVoiceClient, didReceiveMuteFor call: VGVoiceCall, withLegId legId: String, andStatus isMuted: Bool) {}
-    func voiceClient(_ client: VGVoiceClient, didReceiveEarmuffFor call: VGVoiceCall, withLegId legId: String, andStatus earmuffStatus: Bool) {}
-    func voiceClient(_ client: VGVoiceClient, didReceiveDTMFFor call: VGVoiceCall, withLegId legId: String, andDigits digits: String) {}
 }

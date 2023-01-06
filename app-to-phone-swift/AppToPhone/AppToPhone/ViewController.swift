@@ -31,11 +31,9 @@ class ViewController: UIViewController {
             callButton.topAnchor.constraint(equalTo: connectionStatusLabel.bottomAnchor, constant: 24)
         ])
         
-        // TODO: what is auto???????????
         let config = VGClientConfig(region: .US)
         client.setConfig(config)
         
-        // TODO: named params
         client.createSession("ALICE_JWT", sessionId: nil) { error, sessionId in
             DispatchQueue.main.async { [weak self] in
                 guard let self else { return }

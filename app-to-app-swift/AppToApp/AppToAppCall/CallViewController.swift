@@ -74,7 +74,6 @@ class CallViewController: UIViewController {
             if error == nil {
                 self.setHangUpButtonHidden(false)
                 self.call = call
-                self.call?.delegate = self
             } else {
                 self.setStatusLabelText(error?.localizedDescription)
             }
@@ -82,8 +81,7 @@ class CallViewController: UIViewController {
     }
     
     func displayIncomingCallAlert(callInvite: VGVoiceInvite) {
-        // TODO: No caller info
-        let from = "Unknown"
+        let from = callInvite.from.id ?? "Unknown"
         
         let alert = UIAlertController(title: "Incoming call from", message: from, preferredStyle: .alert)
         
@@ -93,14 +91,13 @@ class CallViewController: UIViewController {
                     self.setHangUpButtonHidden(false)
                     self.setStatusLabelText("On a call with \(from)")
                     self.call = call
-                    self.call?.delegate = self
                 } else {
                     self.setStatusLabelText(error?.localizedDescription)
                 }
             }
         }))
         
-        alert.addAction(UIAlertAction(title: "Reject", style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: "Reject", style: .destructive, handler: { _ in
             callInvite.reject { error in
                 if let error {
                     self.setStatusLabelText(error.localizedDescription)
@@ -114,6 +111,7 @@ class CallViewController: UIViewController {
     @objc private func endCall() {
         call?.hangup({ error in
             if error == nil {
+                self.call = nil
                 self.setHangUpButtonHidden(true)
                 self.setStatusLabelText("Ready to receive call...")
             }
@@ -153,38 +151,14 @@ extension CallViewController: VGVoiceClientDelegate {
         }
     }
     
+    func voiceClient(_ client: VGVoiceClient, didReceiveHangupFor call: VGVoiceCall, withLegId legId: String, andQuality callQuality: VGRTCQuality) {
+        self.call = nil
+        self.setHangUpButtonHidden(true)
+        self.setStatusLabelText("Ready to receive call...")
+    }
+    
+    // TODO: should be an enum
     func client(_ client: VGBaseClient, didReceiveSessionErrorWithReason reason: String) {
         self.setStatusLabelText(reason)
     }
-    
-    // TODO: Some (if not most) of these should be optional!
-    func clientWillReconnect(_ client: VGBaseClient) {}
-    func clientDidReconnect(_ client: VGBaseClient) {}
-    func voiceClient(_ client: VGVoiceClient, didReceiveCallTransferFor call: VGVoiceCall, withNewConversation newConversation: VGConversation, andPrevConversation prevConversation: VGConversation) {}
-    func voiceClient(_ client: VGVoiceClient, didReceiveMuteFor call: VGVoiceCall, withLegId legId: String, andStatus isMuted: Bool) {}
-    func voiceClient(_ client: VGVoiceClient, didReceiveEarmuffFor call: VGVoiceCall, withLegId legId: String, andStatus earmuffStatus: Bool) {}
-    func voiceClient(_ client: VGVoiceClient, didReceiveDTMFFor call: VGVoiceCall, withLegId legId: String, andDigits digits: String) {}
-}
-
-extension CallViewController: VGCallDelegate {
-    // TODO: Not being called
-    func onCallStatusChange(_ legid: String, status: String) {
-        print(legid, status)
-        //        switch status {
-        //        case .answered:
-        //            guard callMember.user.name != self.user.name else { return }
-        //            setStatusLabelText("On a call with \(callMember.user.name)")
-        //        case .completed:
-        //            setStatusLabelText("Call ended")
-        //            setHangUpButtonHidden(true)
-        //            self.call = nil
-        //        default:
-        //            break
-        //        }
-    }
-    
-    func onError(_ error: Error) {
-        setStatusLabelText(error.localizedDescription)
-    }
-
 }
