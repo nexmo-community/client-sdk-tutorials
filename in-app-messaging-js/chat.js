@@ -1,5 +1,5 @@
-const ALICE_JWT = '';
-const BOB_JWT = '';
+const USER1_JWT = '';
+const USER2_JWT = '';
 const CONVERSATION_ID = '';
 
 const messageTextarea = document.getElementById("messageTextarea");
@@ -18,11 +18,11 @@ let messagesCount = 0;
 let messageDate;
 
 function authenticate(username) {
-  if (username == "Alice") {
-    return ALICE_JWT;
+  if (username == "USER1_NAME") {
+    return USER1_JWT;
   }
-  if (username == "Bob") {
-    return BOB_JWT;
+  if (username == "USER2_NAME") {
+    return USER2_JWT;
   }
   alert("User not recognized");
 }
